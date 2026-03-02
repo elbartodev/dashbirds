@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DashBirds – Login</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1b4332, #2d6a4f);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.logo h1 {
+  font-size: 2rem;
+  color: #2d6a4f;
+  font-weight: 800;
+}
+.logo p {
+  color: #6c757d;
+  font-size: .85rem;
+  margin-top: 6px;
+}
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 24px;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #6c757d;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  text-decoration: none;
+  font-size: .9rem;
+  transition: .2s;
+}
+.tab.active {
+  color: #2d6a4f;
+  border-color: #2d6a4f;
+}
+.fg {
+  margin-bottom: 16px;
+}
+.fg label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #212529;
+}
+.fg input {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: .9rem;
+  font-family: inherit;
+  color: #212529;
+  background: #fff;
+  transition: border-color .2s;
+}
+.fg input:focus {
+  outline: none;
+  border-color: #2d6a4f;
+  box-shadow: 0 0 0 3px rgba(45,106,79,.12);
+}
+.btn-submit {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #2d6a4f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background .2s;
+}
+.btn-submit:hover {
+  background: #1b4332;
+}
+.alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: .85rem;
+  margin-bottom: 14px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">
+    <h1>🐦 DashBirds</h1>
+    <p>Sistema de Gestão para Criadores de Aves</p>
+  </div>
+
+  <div class="tabs">
+    <a class="tab active" href="/login">Entrar</a>
+    <a class="tab" href="/cadastro">Cadastrar</a>
+  </div>
+
+  {% if erro %}
+  <div class="alert">{{ erro }}</div>
+  {% endif %}
+
+  <form method="POST" action="/login">
+    <div class="fg">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" placeholder="seu@email.com" required autofocus>
+    </div>
+    <div class="fg">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn-submit">Entrar</button>
+  </form>
+
+  <p style="text-align:center;margin-top:18px;font-size:.85rem;color:#6c757d">
+    Não tem conta? <a href="/cadastro" style="color:#2d6a4f;font-weight:600">Cadastre-se</a>
+  </p>
+</div>
+</body>
+</html>

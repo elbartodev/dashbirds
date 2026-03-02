@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Editar Filhote{% endblock %}
+{% block page_title %}Editar Filhote #{{ filhote.id }}{% endblock %}
+{% block content %}
+<div style="max-width:600px">
+  <div class="card">
+    <form method="POST">
+      <div class="grid2">
+        <div class="fg"><label>Espécie</label><input type="text" name="especie" value="{{ filhote.especie or '' }}"></div>
+        <div class="fg"><label>Sexo</label>
+          <select name="sexo">
+            <option {% if filhote.sexo=='Indeterminado' %}selected{% endif %}>Indeterminado</option>
+            <option {% if filhote.sexo=='Macho' %}selected{% endif %}>Macho</option>
+            <option {% if filhote.sexo=='Fêmea' %}selected{% endif %}>Fêmea</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="fg"><label>Anilha</label><input type="text" name="anilha" value="{{ filhote.anilha or '' }}" placeholder="Deixe vazio se não anilhado"></div>
+        <div class="fg"><label>Cor da Anilha</label><input type="color" name="cor_anilha" value="{{ filhote.cor_anilha or '#52b788' }}"></div>
+      </div>
+      <div class="fg"><label>Características Genéticas</label><input type="text" name="genetica" value="{{ filhote.genetica or '' }}"></div>
+      <div class="fg"><label>Valor de Venda (R$)</label><input type="number" name="valor_venda" value="{{ filhote.valor_venda or 0 }}" step="0.01" min="0"></div>
+      <div class="fg"><label>Status</label>
+        <select name="status">
+          <option {% if filhote.status=='No berçário' %}selected{% endif %}>No berçário</option>
+          <option {% if filhote.status=='Desmamado' %}selected{% endif %}>Desmamado</option>
+          <option {% if filhote.status=='Movido para plantel' %}selected{% endif %}>Movido para plantel</option>
+          <option {% if filhote.status=='Vendido' %}selected{% endif %}>Vendido</option>
+          <option {% if filhote.status=='Falecido' %}selected{% endif %}>Falecido</option>
+        </select>
+      </div>
+      <div class="fg"><label>Observações</label><textarea name="observacoes" rows="2">{{ filhote.observacoes or '' }}</textarea></div>
+      <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap">
+        <a href="{{ url_for('bercario') }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" name="mover_plantel" value="1" class="btn btn-success">→ Salvar e Mover para Plantel</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

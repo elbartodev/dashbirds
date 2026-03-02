@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Plantel{% endblock %}
+{% block page_title %}Plantel (Aves){% endblock %}
+{% block content %}
+<form method="GET" class="search-row">
+  <input type="text" name="q" value="{{ q }}" placeholder="🔍 Buscar anilha, espécie, genética..." style="max-width:260px">
+  <select name="sexo">
+    <option value="">Todos os sexos</option>
+    <option {% if sexo=='Macho' %}selected{% endif %}>Macho</option>
+    <option {% if sexo=='Fêmea' %}selected{% endif %}>Fêmea</option>
+    <option {% if sexo=='Indeterminado' %}selected{% endif %}>Indeterminado</option>
+  </select>
+  <select name="status">
+    <option value="">Todos os status</option>
+    <option {% if status=='Ativo' %}selected{% endif %}>Ativo</option>
+    <option {% if status=='Vendido' %}selected{% endif %}>Vendido</option>
+    <option {% if status=='Falecido' %}selected{% endif %}>Falecido</option>
+  </select>
+  <button type="submit" class="btn btn-outline btn-sm">Filtrar</button>
+  <a href="{{ url_for('nova_ave') }}" class="btn btn-primary btn-sm">+ Nova Ave</a>
+</form>
+
+<div class="card" style="padding:0">
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Anilha</th><th>Cor</th><th>Espécie</th><th>Sexo</th>
+          <th>Genética</th><th>Gaiola</th><th>Vl. Venda</th>
+          <th>Custo Méd.</th><th>Status</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in aves %}
+        <tr>
+          <td><strong>{{ a.anilha }}</strong></td>
+          <td>
+            <span class="swatch" style="background:{{ a.cor_anilha or '#ccc' }}"></span>
+            {{ a.cor_plumagem or '-' }}
+          </td>
+          <td>
+            {{ a.especie or '-' }}
+            {% if a.subespecie %}<br><small style="color:var(--muted)">{{ a.subespecie }}</small>{% endif %}
+          </td>
+          <td>
+            {% if a.sexo == 'Macho' %}<span class="badge b-blue">♂ Macho</span>
+            {% elif a.sexo == 'Fêmea' %}<span class="badge b-orange">♀ Fêmea</span>
+            {% else %}<span class="badge b-gray">? Indet.</span>{% endif %}
+          </td>
+          <td style="font-size:.78rem;color:var(--muted)">{{ a.genetica or '-' }}</td>
+          <td>{{ a.gaiola.nome if a.gaiola else '-' }}</td>
+          <td>{% if a.valor_venda %}R$ {{ "%.2f"|format(a.valor_venda) }}{% else %}-{% endif %}</td>
+          <td>R$ {{ "%.2f"|format(a.custo_total()) }}</td>
+          <td>
+            {% if a.status == 'Ativo' %}<span class="badge b-green">Ativo</span>
+            {% elif a.status == 'Vendido' %}<span class="badge b-red">Vendido</span>
+            {% else %}<span class="badge b-gray">{{ a.status }}</span>{% endif %}
+          </td>
+          <td style="white-space:nowrap">
+            <a href="{{ url_for('editar_ave', id=a.id) }}" class="btn btn-outline btn-sm">✏️</a>
+            <form method="POST" action="{{ url_for('deletar_ave', id=a.id) }}" style="display:inline" onsubmit="return confirm('Deletar esta ave?')">
+              <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">Nenhuma ave encontrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

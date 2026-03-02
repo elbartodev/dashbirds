@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Visão Geral{% endblock %}
+{% block content %}
+<div class="metrics">
+  <div class="metric m-green">
+    <div class="lbl">Aves Ativas</div>
+    <div class="val">{{ total_aves }}</div>
+    <div class="sub">{{ machos }} machos / {{ femeas }} fêmeas</div>
+  </div>
+  <div class="metric m-blue">
+    <div class="lbl">Posturas Ativas</div>
+    <div class="val">{{ posturas_ativas }}</div>
+    <div class="sub">Total geral de posturas</div>
+  </div>
+  <div class="metric m-orange">
+    <div class="lbl">No Berçário</div>
+    <div class="val">{{ filhotes_ativos }}</div>
+    <div class="sub">Filhotes ativos</div>
+  </div>
+  <div class="metric m-red">
+    <div class="lbl">Aves Vendidas</div>
+    <div class="val">{{ aves_vendidas }}</div>
+    <div class="sub">R$ {{ "%.2f"|format(receita_total) }} arrecadado</div>
+  </div>
+  <div class="metric m-green">
+    <div class="lbl">Gaiolas</div>
+    <div class="val">{{ gaiolas }}</div>
+    <div class="sub">Cadastradas</div>
+  </div>
+  <div class="metric m-purple">
+    <div class="lbl">Valor Est. Plantel</div>
+    <div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(valor_plantel) }}</div>
+    <div class="sub">Aves ativas</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Distribuição por Espécie</span></div>
+    {% if especies %}
+      {% for esp, qtd in especies.items() %}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:.85rem">{{ esp }}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="background:var(--primary-light);height:8px;width:{{ (qtd / total_ativas * 100)|int }}px;border-radius:4px;max-width:100px"></div>
+          <strong>{{ qtd }}</strong>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--muted);font-size:.85rem;text-align:center;padding:20px 0">Nenhuma ave cadastrada.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Últimas Posturas</span></div>
+    {% if posturas_recentes %}
+      {% for p in posturas_recentes %}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.83rem">
+        <span>{{ p.femea.anilha if p.femea else '?' }} × {{ p.macho.anilha if p.macho else '?' }}</span>
+        <span>{{ p.total_ovos }} ovos / {{ p.ovos_fecundados }} fec.</span>
+        <span class="badge b-blue">{{ p.status }}</span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--muted);font-size:.85rem;text-align:center;padding:20px 0">Nenhuma postura registrada.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

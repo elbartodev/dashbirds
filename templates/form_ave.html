@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block content %}
+<div style="max-width:700px">
+  <div class="card">
+    {% if erro %}<div class="alert a-danger">{{ erro }}</div>{% endif %}
+    <form method="POST">
+      <div class="grid2">
+        <div class="fg"><label>Anilha *</label><input type="text" name="anilha" value="{{ ave.anilha if ave else '' }}" placeholder="Ex: A001" required></div>
+        <div class="fg"><label>Cor da Anilha</label><input type="color" name="cor_anilha" value="{{ ave.cor_anilha if ave else '#52b788' }}"></div>
+      </div>
+      <div class="grid2">
+        <div class="fg"><label>Espécie *</label><input type="text" name="especie" value="{{ ave.especie if ave else '' }}" placeholder="Calopsita, Agapornis..." required></div>
+        <div class="fg"><label>Mutação / Subespécie</label><input type="text" name="subespecie" value="{{ ave.subespecie if ave else '' }}" placeholder="Lutino, Pied..."></div>
+      </div>
+      <div class="grid2">
+        <div class="fg">
+          <label>Sexo</label>
+          <select name="sexo">
+            <option {% if not ave or ave.sexo=='Indeterminado' %}selected{% endif %}>Indeterminado</option>
+            <option {% if ave and ave.sexo=='Macho' %}selected{% endif %}>Macho</option>
+            <option {% if ave and ave.sexo=='Fêmea' %}selected{% endif %}>Fêmea</option>
+          </select>
+        </div>
+        <div class="fg"><label>Cor da Plumagem</label><input type="text" name="cor_plumagem" value="{{ ave.cor_plumagem if ave else '' }}" placeholder="Amarelo, Cinza..."></div>
+      </div>
+      <div class="fg"><label>Características Genéticas</label><input type="text" name="genetica" value="{{ ave.genetica if ave else '' }}" placeholder="Split Lutino, Cinza Normal..."></div>
+      <div class="grid2">
+        <div class="fg"><label>Data de Nascimento</label><input type="date" name="data_nascimento" value="{{ ave.data_nascimento if ave else '' }}"></div>
+        <div class="fg"><label>Data de Aquisição</label><input type="date" name="data_aquisicao" value="{{ ave.data_aquisicao if ave else '' }}"></div>
+      </div>
+      <div class="grid2">
+        <div class="fg"><label>Custo de Aquisição (R$)</label><input type="number" name="custo_aquisicao" value="{{ ave.custo_aquisicao if ave else '0' }}" step="0.01" min="0"></div>
+        <div class="fg"><label>Valor de Venda (R$)</label><input type="number" name="valor_venda" value="{{ ave.valor_venda if ave else '0' }}" step="0.01" min="0"></div>
+      </div>
+      <div class="grid2">
+        <div class="fg"><label>Custo Alimentação/mês (R$)</label><input type="number" name="custo_alimentacao_mes" value="{{ ave.custo_alimentacao_mes if ave else '0' }}" step="0.01" min="0"></div>
+        <div class="fg">
+          <label>Gaiola</label>
+          <select name="gaiola_id">
+            <option value="">-- Nenhuma --</option>
+            {% for g in gaiolas %}
+            <option value="{{ g.id }}" {% if ave and ave.gaiola_id == g.id %}selected{% endif %}>{{ g.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="fg">
+          <label>Status</label>
+          <select name="status">
+            <option {% if not ave or ave.status=='Ativo' %}selected{% endif %}>Ativo</option>
+            <option {% if ave and ave.status=='Vendido' %}selected{% endif %}>Vendido</option>
+            <option {% if ave and ave.status=='Falecido' %}selected{% endif %}>Falecido</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Origem</label>
+          <select name="origem">
+            <option {% if not ave or ave.origem=='Comprado' %}selected{% endif %}>Comprado</option>
+            <option {% if ave and ave.origem=='Nascido no criadouro' %}selected{% endif %}>Nascido no criadouro</option>
+            <option {% if ave and ave.origem=='Doação' %}selected{% endif %}>Doação</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Observações</label><textarea name="observacoes" rows="2" placeholder="Anotações gerais...">{{ ave.observacoes if ave else '' }}</textarea></div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <a href="{{ url_for('plantel') }}" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Salvar Ave</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

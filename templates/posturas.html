@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Posturas{% endblock %}
+{% block page_title %}Posturas{% endblock %}
+{% block content %}
+
+<div class="modal-bg" id="modal-postura">
+  <div class="modal-box">
+    <div class="modal-head"><h4 id="mp-title">Nova Postura</h4><button class="close-x" onclick="closeModal('modal-postura')">×</button></div>
+    <form method="POST" id="form-postura" action="{{ url_for('nova_postura') }}">
+      <div class="modal-body">
+        <div class="grid2">
+          <div class="fg"><label>Fêmea (Anilha)</label>
+            <select name="femea_id">
+              <option value="">-- Selecione --</option>
+              {% for a in femeas %}<option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="fg"><label>Macho (Anilha)</label>
+            <select name="macho_id">
+              <option value="">-- Selecione --</option>
+              {% for a in machos %}<option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="fg"><label>Data da Postura</label><input type="date" name="data_postura"></div>
+          <div class="fg"><label>Gaiola</label>
+            <select name="gaiola_id">
+              <option value="">-- Selecione --</option>
+              {% for g in gaiolas %}<option value="{{ g.id }}">{{ g.nome }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="grid3">
+          <div class="fg"><label>Total de Ovos</label><input type="number" name="total_ovos" placeholder="0" min="0" value="0"></div>
+          <div class="fg"><label>Fecundados</label><input type="number" name="ovos_fecundados" placeholder="0" min="0" value="0"></div>
+          <div class="fg"><label>Eclodidos</label><input type="number" name="ovos_eclodidos" placeholder="0" min="0" value="0"></div>
+        </div>
+        <div class="fg"><label>Status</label>
+          <select name="status">
+            <option>Em andamento</option><option>Incubação</option><option>Eclosão</option><option>Encerrada</option>
+          </select>
+        </div>
+        <div class="fg"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-postura')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+  <button class="btn btn-primary btn-sm" onclick="openModal('modal-postura')">+ Nova Postura</button>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Fêmea</th><th>Macho</th><th>Data</th><th>Ovos</th><th>Fecund.</th><th>Eclodidos</th><th>Gaiola</th><th>Status</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        {% for p in posturas %}
+        <tr>
+          <td>#{{ p.id }}</td>
+          <td>{{ p.femea.anilha if p.femea else '-' }}</td>
+          <td>{{ p.macho.anilha if p.macho else '-' }}</td>
+          <td>{{ p.data_postura.strftime('%d/%m/%Y') if p.data_postura else '-' }}</td>
+          <td>{{ p.total_ovos }}</td>
+          <td>{{ p.ovos_fecundados }}</td>
+          <td>
+            <strong>{{ p.ovos_eclodidos }}</strong>
+            {% if p.filhotes|length > 0 %}
+            <a href="{{ url_for('bercario') }}" style="font-size:.72rem;color:var(--primary)"> → ver berçário</a>
+            {% endif %}
+          </td>
+          <td>{{ p.gaiola.nome if p.gaiola else '-' }}</td>
+          <td>
+            {% if p.status == 'Encerrada' %}<span class="badge b-gray">Encerrada</span>
+            {% elif p.status == 'Eclosão' %}<span class="badge b-green">Eclosão</span>
+            {% elif p.status == 'Incubação' %}<span class="badge b-orange">Incubação</span>
+            {% else %}<span class="badge b-blue">Em andamento</span>{% endif %}
+          </td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-outline btn-sm" onclick="editPostura({{ p.id }}, '{{ p.femea_id or '' }}', '{{ p.macho_id or '' }}', '{{ p.gaiola_id or '' }}', '{{ p.data_postura or '' }}', {{ p.total_ovos }}, {{ p.ovos_fecundados }}, {{ p.ovos_eclodidos }}, '{{ p.status }}', '{{ p.observacoes or '' }}')">✏️</button>
+            <form method="POST" action="{{ url_for('deletar_postura', id=p.id) }}" style="display:inline" onsubmit="return confirm('Deletar postura #{{ p.id }}?')">
+              <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">Nenhuma postura registrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function editPostura(id, fid, mid, gid, data, ovos, fec, ecl, status, obs){
+  document.getElementById('form-postura').action = '/postura/editar/' + id;
+  document.getElementById('mp-title').textContent = 'Editar Postura #' + id;
+  document.querySelector('[name="femea_id"]').value = fid;
+  document.querySelector('[name="macho_id"]').value = mid;
+  document.querySelector('[name="gaiola_id"]').value = gid;
+  document.querySelector('[name="data_postura"]').value = data;
+  document.querySelector('[name="total_ovos"]').value = ovos;
+  document.querySelector('[name="ovos_fecundados"]').value = fec;
+  document.querySelector('[name="ovos_eclodidos"]').value = ecl;
+  document.querySelector('[name="status"]').value = status;
+  document.querySelector('[name="observacoes"]').value = obs;
+  openModal('modal-postura');
+}
+</script>
+{% endblock %}

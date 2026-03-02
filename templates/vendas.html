@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Vendas{% endblock %}
+{% block page_title %}Vendas{% endblock %}
+{% block content %}
+
+<div class="modal-bg" id="modal-venda">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-head"><h4>Registrar Venda</h4><button class="close-x" onclick="closeModal('modal-venda')">×</button></div>
+    <form method="POST" action="{{ url_for('nova_venda') }}">
+      <div class="modal-body">
+        <div class="fg"><label>Ave *</label>
+          <select name="ave_id" required>
+            <option value="">-- Selecione --</option>
+            {% for a in aves_ativas %}<option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="grid2">
+          <div class="fg"><label>Data da Venda</label><input type="date" name="data_venda"></div>
+          <div class="fg"><label>Valor de Venda (R$)</label><input type="number" name="valor" placeholder="0.00" step="0.01" min="0"></div>
+        </div>
+        <div class="fg"><label>Comprador</label><input type="text" name="comprador" placeholder="Nome ou apelido"></div>
+        <div class="fg"><label>Contato</label><input type="text" name="contato" placeholder="Telefone ou e-mail"></div>
+        <div class="fg"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-venda')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Confirmar Venda</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Custos -->
+<div class="modal-bg" id="modal-custos">
+  <div class="modal-box">
+    <div class="modal-head"><h4 id="mc-title">Custos da Ave</h4><button class="close-x" onclick="closeModal('modal-custos')">×</button></div>
+    <div class="modal-body" id="mc-body">
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-outline" onclick="closeModal('modal-custos')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="metrics" style="grid-template-columns:repeat(4,1fr)">
+  <div class="metric m-green"><div class="lbl">Total Vendas</div><div class="val">{{ vendas|length }}</div></div>
+  <div class="metric m-blue"><div class="lbl">Receita Total</div><div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(receita) }}</div></div>
+  <div class="metric m-orange"><div class="lbl">Custo Total</div><div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(custo_total) }}</div></div>
+  <div class="metric m-purple"><div class="lbl">Lucro Total</div><div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(lucro) }}</div></div>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="card-header" style="padding:16px 20px">
+    <span class="card-title">Aves Vendidas</span>
+    <button class="btn btn-primary btn-sm" onclick="openModal('modal-venda')">+ Registrar Venda</button>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Anilha</th><th>Espécie</th><th>Data</th><th>Comprador</th><th>Vl. Venda</th><th>Custo Total</th><th>Lucro</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        {% for v in vendas %}
+        {% set custo = v.ave.custo_total() if v.ave else 0 %}
+        {% set lucro_item = (v.valor or 0) - custo %}
+        <tr>
+          <td><strong>{{ v.ave.anilha if v.ave else '-' }}</strong></td>
+          <td>{{ v.ave.especie if v.ave else '-' }}</td>
+          <td>{{ v.data_venda.strftime('%d/%m/%Y') if v.data_venda else '-' }}</td>
+          <td>{{ v.comprador or '-' }}</td>
+          <td>R$ {{ "%.2f"|format(v.valor or 0) }}</td>
+          <td>R$ {{ "%.2f"|format(custo) }}</td>
+          <td style="color:{% if lucro_item >= 0 %}var(--success){% else %}var(--danger){% endif %};font-weight:700">
+            R$ {{ "%.2f"|format(lucro_item) }}
+          </td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-outline btn-sm" onclick="verCustos({{ v.id }}, '{{ v.ave.anilha if v.ave else '' }}', {{ custo }}, {{ v.valor or 0 }})">💰 Custos</button>
+            <form method="POST" action="{{ url_for('deletar_venda', id=v.id) }}" style="display:inline" onsubmit="return confirm('Cancelar venda? A ave voltará para Ativo.')">
+              <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">Nenhuma venda registrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function verCustos(vendaId, anilha, custo, valor){
+  document.getElementById('mc-title').textContent = 'Custos – Ave ' + anilha;
+  const lucro = valor - custo;
+  document.getElementById('mc-body').innerHTML = `
+    <div style="background:var(--bg);padding:12px;border-radius:8px;margin-bottom:16px;font-size:.85rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center">
+        <div><div style="color:var(--muted);font-size:.72rem">CUSTO TOTAL</div><div style="font-weight:800;font-size:1.1rem">R$ ${custo.toFixed(2)}</div></div>
+        <div><div style="color:var(--muted);font-size:.72rem">VALOR VENDA</div><div style="font-weight:800;font-size:1.1rem;color:var(--primary)">R$ ${valor.toFixed(2)}</div></div>
+        <div><div style="color:var(--muted);font-size:.72rem">LUCRO</div><div style="font-weight:800;font-size:1.1rem;color:${lucro>=0?'var(--success)':'var(--danger)'}">R$ ${lucro.toFixed(2)}</div></div>
+      </div>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);text-align:center">Para adicionar custos variados, edite a ave no Plantel.</p>
+  `;
+  openModal('modal-custos');
+}
+</script>
+{% endblock %}

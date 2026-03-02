@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Gaiolas{% endblock %}
+{% block page_title %}Gaiolas{% endblock %}
+{% block content %}
+
+<!-- Modal Nova Gaiola -->
+<div class="modal-bg" id="modal-gaiola">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-head"><h4 id="modal-g-title">Nova Gaiola</h4><button class="close-x" onclick="closeModal('modal-gaiola')">×</button></div>
+    <form method="POST" id="form-gaiola" action="{{ url_for('nova_gaiola') }}">
+      <div class="modal-body">
+        <div class="grid2">
+          <div class="fg"><label>Nome / Número *</label><input type="text" name="nome" id="g-nome" placeholder="Gaiola 01" required></div>
+          <div class="fg"><label>Tipo</label>
+            <select name="tipo" id="g-tipo">
+              <option>Reprodução</option><option>Alojamento</option><option>Quarentena</option><option>Berçário</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="fg"><label>Capacidade Máxima</label><input type="number" name="capacidade" id="g-cap" placeholder="2" min="1"></div>
+          <div class="fg"><label>Localização</label><input type="text" name="localizacao" id="g-local" placeholder="Setor A"></div>
+        </div>
+        <div class="fg"><label>Observações</label><textarea name="observacoes" id="g-obs" rows="2"></textarea></div>
+        <input type="hidden" name="gaiola_id" id="g-edit-id" value="">
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-gaiola')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Mover Ave -->
+<div class="modal-bg" id="modal-mover">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-head"><h4>Mover Ave de Gaiola</h4><button class="close-x" onclick="closeModal('modal-mover')">×</button></div>
+    <form method="POST" action="{{ url_for('mover_ave_gaiola') }}">
+      <div class="modal-body">
+        <div class="fg"><label>Ave</label><input type="text" id="mv-info" readonly style="background:#f3f4f6"></div>
+        <input type="hidden" name="ave_id" id="mv-aveid">
+        <div class="fg"><label>Nova Gaiola</label>
+          <select name="gaiola_id">
+            <option value="">-- Nenhuma --</option>
+            {% for g in gaiolas %}<option value="{{ g.id }}">{{ g.nome }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-mover')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Mover</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+  <button class="btn btn-primary btn-sm" onclick="openModal('modal-gaiola')">+ Nova Gaiola</button>
+</div>
+
+{% if not gaiolas %}
+<div class="card" style="text-align:center;padding:40px;color:var(--muted)">
+  <p style="font-size:2rem">🏠</p>
+  <p style="margin-top:8px">Nenhuma gaiola cadastrada ainda.</p>
+</div>
+{% endif %}
+
+<div class="cage-grid">
+  {% for g in gaiolas %}
+  <div class="cage-card">
+    <div class="cage-top">
+      <div>
+        <div class="cage-name">{{ g.nome }}</div>
+        <div style="font-size:.75rem;color:var(--muted)">{{ g.tipo }} • Cap: {{ g.capacidade }}</div>
+        {% if g.localizacao %}<div style="font-size:.72rem;color:var(--muted)">📍 {{ g.localizacao }}</div>{% endif %}
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-outline btn-sm" onclick="editGaiola('{{ g.id }}','{{ g.nome }}','{{ g.tipo }}','{{ g.capacidade }}','{{ g.localizacao or '' }}','{{ g.observacoes or '' }}')">✏️</button>
+        <form method="POST" action="{{ url_for('deletar_gaiola', id=g.id) }}" style="display:inline" onsubmit="return confirm('Deletar gaiola {{ g.nome }}?')">
+          <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+        </form>
+      </div>
+    </div>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:6px">
+      {{ g.aves|selectattr('status','eq','Ativo')|list|length }} ave(s) ativa(s) / {{ g.capacidade }} vagas
+    </div>
+    <div class="cage-birds">
+      {% for a in g.aves if a.status == 'Ativo' %}
+      <span class="bird-tag" onclick="openMover('{{ a.id }}','{{ a.anilha }} - {{ a.especie }}')">
+        <span class="swatch" style="background:{{ a.cor_anilha or '#ccc' }}"></span>{{ a.anilha }}
+      </span>
+      {% else %}
+      <span style="font-size:.78rem;color:var(--muted)">Nenhuma ave</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if aves_sem_gaiola %}
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><span class="card-title">Aves sem gaiola</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+    {% for a in aves_sem_gaiola %}
+    <span class="bird-tag" onclick="openMover('{{ a.id }}','{{ a.anilha }} - {{ a.especie }}')">
+      <span class="swatch" style="background:{{ a.cor_anilha or '#ccc' }}"></span>{{ a.anilha }} – {{ a.especie }}
+    </span>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function openMover(aveid, info){
+  document.getElementById('mv-aveid').value = aveid;
+  document.getElementById('mv-info').value = info;
+  openModal('modal-mover');
+}
+function editGaiola(id, nome, tipo, cap, local, obs){
+  document.getElementById('form-gaiola').action = '/gaiola/editar/' + id;
+  document.getElementById('modal-g-title').textContent = 'Editar Gaiola';
+  document.getElementById('g-nome').value = nome;
+  document.getElementById('g-tipo').value = tipo;
+  document.getElementById('g-cap').value = cap;
+  document.getElementById('g-local').value = local;
+  document.getElementById('g-obs').value = obs;
+  openModal('modal-gaiola');
+}
+</script>
+{% endblock %}

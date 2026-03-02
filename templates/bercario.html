@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Berçário{% endblock %}
+{% block page_title %}Berçário{% endblock %}
+{% block content %}
+<div class="metrics" style="grid-template-columns:repeat(3,1fr)">
+  <div class="metric m-blue"><div class="lbl">Total Filhotes</div><div class="val">{{ total }}</div></div>
+  <div class="metric m-green"><div class="lbl">Anilhados</div><div class="val">{{ anilhados }}</div></div>
+  <div class="metric m-orange"><div class="lbl">Sem Anilha</div><div class="val">{{ sem_anilha }}</div></div>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Postura</th><th>Pai</th><th>Mãe</th><th>Eclosão</th><th>Espécie</th><th>Sexo</th><th>Anilha</th><th>Status</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        {% for f in filhotes %}
+        <tr>
+          <td>#{{ f.id }}</td>
+          <td>{% if f.postura %}#{{ f.postura.id }}{% else %}-{% endif %}</td>
+          <td>{{ f.macho.anilha if f.macho else '-' }}</td>
+          <td>{{ f.femea.anilha if f.femea else '-' }}</td>
+          <td>{{ f.data_eclosao.strftime('%d/%m/%Y') if f.data_eclosao else '-' }}</td>
+          <td>{{ f.especie or '-' }}</td>
+          <td>
+            {% if f.sexo == 'Macho' %}<span class="badge b-blue">♂ Macho</span>
+            {% elif f.sexo == 'Fêmea' %}<span class="badge b-orange">♀ Fêmea</span>
+            {% else %}<span class="badge b-gray">? Indet.</span>{% endif %}
+          </td>
+          <td>
+            {% if f.anilha %}
+              <span class="swatch" style="background:{{ f.cor_anilha or '#ccc' }}"></span>{{ f.anilha }}
+            {% else %}<span style="color:var(--muted);font-size:.78rem">Não anilhado</span>{% endif %}
+          </td>
+          <td>
+            {% if f.status == 'No berçário' %}<span class="badge b-blue">No berçário</span>
+            {% elif f.status == 'Desmamado' %}<span class="badge b-orange">Desmamado</span>
+            {% elif f.status == 'Movido para plantel' %}<span class="badge b-green">No plantel</span>
+            {% elif f.status == 'Vendido' %}<span class="badge b-red">Vendido</span>
+            {% else %}<span class="badge b-gray">{{ f.status }}</span>{% endif %}
+          </td>
+          <td style="white-space:nowrap">
+            <a href="{{ url_for('editar_filhote', id=f.id) }}" class="btn btn-outline btn-sm">✏️</a>
+            {% if f.status != 'Movido para plantel' %}
+            <a href="{{ url_for('filhote_para_plantel', id=f.id) }}" class="btn btn-success btn-sm" onclick="return confirm('Mover para o plantel?')">→ Plantel</a>
+            {% endif %}
+            <form method="POST" action="{{ url_for('deletar_filhote', id=f.id) }}" style="display:inline" onsubmit="return confirm('Deletar filhote #{{ f.id }}?')">
+              <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">Nenhum filhote no berçário.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
