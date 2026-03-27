@@ -1,42 +1,187 @@
 {% extends "base.html" %}
-{% block title %}Editar Filhote{% endblock %}
-{% block page_title %}Editar Filhote #{{ filhote.id }}{% endblock %}
+{% block title %}{{ {'pt':'Editar Filhote','en':'Edit Chick','fr':'Modifier Poussin','de':'Küken Bearbeiten'}.get(lang,'Editar Filhote') }} #{{ filhote.id }}{% endblock %}
+{% block page_icon %}heart{% endblock %}
+{% block page_title %}{{ {'pt':'Editar Filhote','en':'Edit Chick','fr':'Modifier Poussin','de':'Küken Bearbeiten'}.get(lang,'Editar Filhote') }} #{{ filhote.id }}{% endblock %}
+
 {% block content %}
-<div style="max-width:600px">
+<div style="max-width:640px;">
   <div class="card">
-    <form method="POST">
-      <div class="grid2">
-        <div class="fg"><label>Espécie</label><input type="text" name="especie" value="{{ filhote.especie or '' }}"></div>
-        <div class="fg"><label>Sexo</label>
-          <select name="sexo">
-            <option {% if filhote.sexo=='Indeterminado' %}selected{% endif %}>Indeterminado</option>
-            <option {% if filhote.sexo=='Macho' %}selected{% endif %}>Macho</option>
-            <option {% if filhote.sexo=='Fêmea' %}selected{% endif %}>Fêmea</option>
+    <div class="card-header">
+      <i class="bi bi-heart"></i>
+      {{ {'pt':'Dados do Filhote','en':'Chick Data','fr':'Données du Poussin','de':'Kükendaten'}.get(lang,'Dados do Filhote') }}
+    </div>
+    <div class="card-body">
+      <form method="POST">
+
+        <!-- Espécie e Sexo -->
+        <div class="row g-3 mb-3">
+          <div class="col-sm-7">
+            <label class="form-label">
+              {{ {'pt':'Espécie','en':'Species','fr':'Espèce','de':'Art'}.get(lang,'Espécie') }}
+            </label>
+            <input type="text" class="form-control" name="especie"
+                   value="{{ filhote.especie or '' }}"
+                   placeholder="{{ {'pt':'Calopsita, Agapornis...','en':'Cockatiel, Lovebird...','fr':'Calopsitte, Inséparable...','de':'Nymphensittich, Unzertrennlicher...'}.get(lang,'Calopsita, Agapornis...') }}">
+          </div>
+          <div class="col-sm-5">
+            <label class="form-label">
+              {{ {'pt':'Sexo','en':'Sex','fr':'Sexe','de':'Geschlecht'}.get(lang,'Sexo') }}
+            </label>
+            <select class="form-select" name="sexo">
+              <option {{ 'selected' if filhote.sexo == 'Indeterminado' }}>
+                {{ {'pt':'Indeterminado','en':'Undetermined','fr':'Indéterminé','de':'Unbestimmt'}.get(lang,'Indeterminado') }}
+              </option>
+              <option {{ 'selected' if filhote.sexo == 'Macho' }}>
+                {{ {'pt':'Macho','en':'Male','fr':'Mâle','de':'Männchen'}.get(lang,'Macho') }}
+              </option>
+              <option {{ 'selected' if filhote.sexo == 'Fêmea' }}>
+                {{ {'pt':'Fêmea','en':'Female','fr':'Femelle','de':'Weibchen'}.get(lang,'Fêmea') }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Anilha e Cor -->
+        <div class="row g-3 mb-3">
+          <div class="col-sm-8">
+            <label class="form-label">
+              {{ {'pt':'Anilha','en':'Ring','fr':'Bague','de':'Ring'}.get(lang,'Anilha') }}
+            </label>
+            <input type="text" class="form-control" name="anilha"
+                   value="{{ filhote.anilha or '' }}"
+                   placeholder="{{ {'pt':'Deixe vazio se não anilhado','en':'Leave empty if unringed','fr':'Laisser vide si non bagué','de':'Leer lassen wenn unberingt'}.get(lang,'Deixe vazio se não anilhado') }}">
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">
+              {{ {'pt':'Cor da Anilha','en':'Ring Color','fr':'Couleur Bague','de':'Ringfarbe'}.get(lang,'Cor da Anilha') }}
+            </label>
+            <input type="color" class="form-control form-control-color w-100"
+                   name="cor_anilha"
+                   value="{{ filhote.cor_anilha or '#52b788' }}">
+          </div>
+        </div>
+
+        <!-- Genética -->
+        <div class="mb-3">
+          <label class="form-label">
+            {{ {'pt':'Características Genéticas','en':'Genetic Traits','fr':'Caractéristiques Génétiques','de':'Genetische Merkmale'}.get(lang,'Características Genéticas') }}
+          </label>
+          <input type="text" class="form-control" name="genetica"
+                 value="{{ filhote.genetica or '' }}"
+                 placeholder="{{ {'pt':'Split Lutino, Cinza Normal...','en':'Split Lutino, Normal Grey...','fr':'Split Lutino, Gris Normal...','de':'Split Lutino, Normal Grau...'}.get(lang,'Split Lutino, Cinza Normal...') }}">
+        </div>
+
+        <!-- Valor de Venda -->
+        <div class="mb-3">
+          <label class="form-label">
+            {{ {'pt':'Valor de Venda (R$)','en':'Sale Price','fr':'Prix de Vente','de':'Verkaufspreis'}.get(lang,'Valor de Venda (R$)') }}
+          </label>
+          <div class="input-group">
+            <span class="input-group-text">R$</span>
+            <input type="number" class="form-control" name="valor_venda"
+                   value="{{ filhote.valor_venda or 0 }}" step="0.01" min="0">
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <select class="form-select" name="status">
+            <option {{ 'selected' if filhote.status == 'No berçário' }}>
+              {{ {'pt':'No berçário','en':'In nursery','fr':'En pouponnière','de':'In Aufzucht'}.get(lang,'No berçário') }}
+            </option>
+            <option {{ 'selected' if filhote.status == 'Desmamado' }}>
+              {{ {'pt':'Desmamado','en':'Weaned','fr':'Sevré','de':'Abgesetzt'}.get(lang,'Desmamado') }}
+            </option>
+            <option {{ 'selected' if filhote.status == 'Movido para plantel' }}>
+              {{ {'pt':'Movido para plantel','en':'Moved to flock','fr':'Déplacé vers cheptel','de':'In Bestand verschoben'}.get(lang,'Movido para plantel') }}
+            </option>
+            <option {{ 'selected' if filhote.status == 'Vendido' }}>
+              {{ {'pt':'Vendido','en':'Sold','fr':'Vendu','de':'Verkauft'}.get(lang,'Vendido') }}
+            </option>
+            <option {{ 'selected' if filhote.status == 'Falecido' }}>
+              {{ {'pt':'Falecido','en':'Deceased','fr':'Décédé','de':'Verstorben'}.get(lang,'Falecido') }}
+            </option>
           </select>
         </div>
-      </div>
-      <div class="grid2">
-        <div class="fg"><label>Anilha</label><input type="text" name="anilha" value="{{ filhote.anilha or '' }}" placeholder="Deixe vazio se não anilhado"></div>
-        <div class="fg"><label>Cor da Anilha</label><input type="color" name="cor_anilha" value="{{ filhote.cor_anilha or '#52b788' }}"></div>
-      </div>
-      <div class="fg"><label>Características Genéticas</label><input type="text" name="genetica" value="{{ filhote.genetica or '' }}"></div>
-      <div class="fg"><label>Valor de Venda (R$)</label><input type="number" name="valor_venda" value="{{ filhote.valor_venda or 0 }}" step="0.01" min="0"></div>
-      <div class="fg"><label>Status</label>
-        <select name="status">
-          <option {% if filhote.status=='No berçário' %}selected{% endif %}>No berçário</option>
-          <option {% if filhote.status=='Desmamado' %}selected{% endif %}>Desmamado</option>
-          <option {% if filhote.status=='Movido para plantel' %}selected{% endif %}>Movido para plantel</option>
-          <option {% if filhote.status=='Vendido' %}selected{% endif %}>Vendido</option>
-          <option {% if filhote.status=='Falecido' %}selected{% endif %}>Falecido</option>
-        </select>
-      </div>
-      <div class="fg"><label>Observações</label><textarea name="observacoes" rows="2">{{ filhote.observacoes or '' }}</textarea></div>
-      <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap">
-        <a href="{{ url_for('bercario') }}" class="btn btn-outline">Cancelar</a>
-        <button type="submit" name="mover_plantel" value="1" class="btn btn-success">→ Salvar e Mover para Plantel</button>
-        <button type="submit" class="btn btn-primary">Salvar</button>
-      </div>
-    </form>
+
+        <!-- Observações -->
+        <div class="mb-4">
+          <label class="form-label">
+            {{ {'pt':'Observações','en':'Notes','fr':'Observations','de':'Anmerkungen'}.get(lang,'Observações') }}
+          </label>
+          <textarea class="form-control" name="observacoes" rows="3"
+                    placeholder="{{ {'pt':'Anotações gerais...','en':'General notes...','fr':'Notes générales...','de':'Allgemeine Notizen...'}.get(lang,'Anotações gerais...') }}">{{ filhote.observacoes or '' }}</textarea>
+        </div>
+
+        <!-- Info pais (somente leitura) -->
+        {% if filhote.macho or filhote.femea %}
+        <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:14px;margin-bottom:20px;">
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">
+            {{ {'pt':'Informações dos Pais','en':'Parent Information','fr':'Informations des Parents','de':'Elterninformationen'}.get(lang,'Informações dos Pais') }}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:3px;">
+                ♂ {{ {'pt':'Pai','en':'Father','fr':'Père','de':'Vater'}.get(lang,'Pai') }}
+              </div>
+              <div style="font-size:0.875rem;color:var(--text-primary);font-weight:600;">
+                {{ filhote.macho.anilha if filhote.macho else '-' }}
+              </div>
+              {% if filhote.macho %}
+              <div style="font-size:0.75rem;color:var(--text-muted);">{{ filhote.macho.especie or '' }}</div>
+              {% endif %}
+            </div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:3px;">
+                ♀ {{ {'pt':'Mãe','en':'Mother','fr':'Mère','de':'Mutter'}.get(lang,'Mãe') }}
+              </div>
+              <div style="font-size:0.875rem;color:var(--text-primary);font-weight:600;">
+                {{ filhote.femea.anilha if filhote.femea else '-' }}
+              </div>
+              {% if filhote.femea %}
+              <div style="font-size:0.75rem;color:var(--text-muted);">{{ filhote.femea.especie or '' }}</div>
+              {% endif %}
+            </div>
+          </div>
+          {% if filhote.data_eclosao %}
+          <div style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">
+            <i class="bi bi-calendar3"></i>
+            {{ {'pt':'Eclosão','en':'Hatched','fr':'Éclosion','de':'Schlupf'}.get(lang,'Eclosão') }}:
+            <strong style="color:var(--text-secondary);">{{ filhote.data_eclosao.strftime('%d/%m/%Y') }}</strong>
+          </div>
+          {% endif %}
+          {% if filhote.postura %}
+          <div style="margin-top:6px;font-size:0.78rem;color:var(--text-muted);">
+            <i class="bi bi-egg"></i>
+            {{ {'pt':'Postura','en':'Clutch','fr':'Ponte','de':'Gelege'}.get(lang,'Postura') }}:
+            <strong style="color:var(--text-secondary);">#{{ filhote.postura.id }}</strong>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Botões -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <a href="{{ url_for('bercario') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            {{ {'pt':'Cancelar','en':'Cancel','fr':'Annuler','de':'Abbrechen'}.get(lang,'Cancelar') }}
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i>
+            {{ {'pt':'Salvar','en':'Save','fr':'Enregistrer','de':'Speichern'}.get(lang,'Salvar') }}
+          </button>
+          {% if filhote.status != 'Movido para plantel' %}
+          <button type="submit" name="mover_plantel" value="1"
+                  class="btn btn-success ms-auto">
+            <i class="bi bi-arrow-right-circle"></i>
+            {{ {'pt':'Salvar e Mover para Plantel','en':'Save and Move to Flock','fr':'Enregistrer et Déplacer vers Cheptel','de':'Speichern und in Bestand verschieben'}.get(lang,'Salvar e Mover para Plantel') }}
+          </button>
+          {% endif %}
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

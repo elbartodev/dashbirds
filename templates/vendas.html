@@ -1,110 +1,293 @@
 {% extends "base.html" %}
-{% block title %}Vendas{% endblock %}
-{% block page_title %}Vendas{% endblock %}
+{% block title %}{{ {'pt':'Vendas','en':'Sales','fr':'Ventes','de':'Verkäufe'}.get(lang,'Vendas') }}{% endblock %}
+{% block page_icon %}cash-coin{% endblock %}
+{% block page_title %}{{ {'pt':'Vendas','en':'Sales','fr':'Ventes','de':'Verkäufe'}.get(lang,'Vendas') }}{% endblock %}
+
 {% block content %}
 
-<div class="modal-bg" id="modal-venda">
-  <div class="modal-box" style="max-width:480px">
-    <div class="modal-head"><h4>Registrar Venda</h4><button class="close-x" onclick="closeModal('modal-venda')">×</button></div>
-    <form method="POST" action="{{ url_for('nova_venda') }}">
-      <div class="modal-body">
-        <div class="fg"><label>Ave *</label>
-          <select name="ave_id" required>
-            <option value="">-- Selecione --</option>
-            {% for a in aves_ativas %}<option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>{% endfor %}
-          </select>
-        </div>
-        <div class="grid2">
-          <div class="fg"><label>Data da Venda</label><input type="date" name="data_venda"></div>
-          <div class="fg"><label>Valor de Venda (R$)</label><input type="number" name="valor" placeholder="0.00" step="0.01" min="0"></div>
-        </div>
-        <div class="fg"><label>Comprador</label><input type="text" name="comprador" placeholder="Nome ou apelido"></div>
-        <div class="fg"><label>Contato</label><input type="text" name="contato" placeholder="Telefone ou e-mail"></div>
-        <div class="fg"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+<!-- Modal Registrar Venda -->
+<div class="modal fade" id="modal-venda" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border-color);background:var(--bg-card);">
+        <h5 class="modal-title" style="color:var(--text-primary);font-size:1rem;font-weight:700;">
+          {{ {'pt':'Registrar Venda','en':'Register Sale','fr':'Enregistrer Vente','de':'Verkauf Erfassen'}.get(lang,'Registrar Venda') }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-foot">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-venda')">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Confirmar Venda</button>
-      </div>
-    </form>
+      <form method="POST" action="{{ url_for('nova_venda') }}">
+        <div class="modal-body" style="background:var(--bg-card);">
+
+          <div class="mb-3">
+            <label class="form-label">{{ {'pt':'Ave','en':'Bird','fr':'Oiseau','de':'Vogel'}.get(lang,'Ave') }} *</label>
+            <select class="form-select" name="ave_id" required>
+              <option value="">-- {{ {'pt':'Selecione','en':'Select','fr':'Sélectionner','de':'Auswählen'}.get(lang,'Selecione') }} --</option>
+              {% for a in aves_ativas %}
+              <option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Data da Venda','en':'Sale Date','fr':'Date de Vente','de':'Verkaufsdatum'}.get(lang,'Data da Venda') }}</label>
+              <input type="date" class="form-control" name="data_venda">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Valor de Venda','en':'Sale Price','fr':'Prix de Vente','de':'Verkaufspreis'}.get(lang,'Valor de Venda') }}</label>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input type="number" class="form-control" name="valor" placeholder="0.00" step="0.01" min="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">{{ {'pt':'Comprador','en':'Buyer','fr':'Acheteur','de':'Käufer'}.get(lang,'Comprador') }}</label>
+            <input type="text" class="form-control" name="comprador"
+                   placeholder="{{ {'pt':'Nome ou apelido','en':'Name or nickname','fr':'Nom ou surnom','de':'Name oder Spitzname'}.get(lang,'Nome ou apelido') }}">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">{{ {'pt':'Contato','en':'Contact','fr':'Contact','de':'Kontakt'}.get(lang,'Contato') }}</label>
+            <input type="text" class="form-control" name="contato"
+                   placeholder="{{ {'pt':'Telefone ou e-mail','en':'Phone or email','fr':'Téléphone ou e-mail','de':'Telefon oder E-Mail'}.get(lang,'Telefone ou e-mail') }}">
+          </div>
+
+          <div class="mb-1">
+            <label class="form-label">{{ {'pt':'Observações','en':'Notes','fr':'Observations','de':'Anmerkungen'}.get(lang,'Observações') }}</label>
+            <textarea class="form-control" name="observacoes" rows="2"></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="border-top:1px solid var(--border-color);background:var(--bg-card);">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            {{ {'pt':'Cancelar','en':'Cancel','fr':'Annuler','de':'Abbrechen'}.get(lang,'Cancelar') }}
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ {'pt':'Confirmar Venda','en':'Confirm Sale','fr':'Confirmer Vente','de':'Verkauf Bestätigen'}.get(lang,'Confirmar Venda') }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
 <!-- Modal Custos -->
-<div class="modal-bg" id="modal-custos">
-  <div class="modal-box">
-    <div class="modal-head"><h4 id="mc-title">Custos da Ave</h4><button class="close-x" onclick="closeModal('modal-custos')">×</button></div>
-    <div class="modal-body" id="mc-body">
-    </div>
-    <div class="modal-foot">
-      <button type="button" class="btn btn-outline" onclick="closeModal('modal-custos')">Fechar</button>
+<div class="modal fade" id="modal-custos" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border-color);background:var(--bg-card);">
+        <h5 class="modal-title" id="mc-title" style="color:var(--text-primary);font-size:1rem;font-weight:700;">
+          {{ {'pt':'Custos da Ave','en':'Bird Costs','fr':'Coûts de l\'Oiseau','de':'Vogelkosten'}.get(lang,'Custos da Ave') }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="mc-body" style="background:var(--bg-card);"></div>
+      <div class="modal-footer" style="border-top:1px solid var(--border-color);background:var(--bg-card);">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          {{ {'pt':'Fechar','en':'Close','fr':'Fermer','de':'Schließen'}.get(lang,'Fechar') }}
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="metrics" style="grid-template-columns:repeat(4,1fr)">
-  <div class="metric m-green"><div class="lbl">Total Vendas</div><div class="val">{{ vendas|length }}</div></div>
-  <div class="metric m-blue"><div class="lbl">Receita Total</div><div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(receita) }}</div></div>
-  <div class="metric m-orange"><div class="lbl">Custo Total</div><div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(custo_total) }}</div></div>
-  <div class="metric m-purple"><div class="lbl">Lucro Total</div><div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(lucro) }}</div></div>
+<!-- Métricas -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card h-100" style="background:var(--bg-card);border-left:3px solid var(--success);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Total Vendas','en':'Total Sales','fr':'Total Ventes','de':'Verkäufe gesamt'}.get(lang,'Total Vendas') }}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--text-primary);line-height:1;">{{ vendas|length }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card h-100" style="background:var(--bg-card);border-left:3px solid var(--info);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Receita Total','en':'Total Revenue','fr':'Recette Totale','de':'Gesamteinnahmen'}.get(lang,'Receita Total') }}
+        </div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--text-primary);line-height:1.2;">R$ {{ "%.2f"|format(receita) }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card h-100" style="background:var(--bg-card);border-left:3px solid var(--warning);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Custo Total','en':'Total Cost','fr':'Coût Total','de':'Gesamtkosten'}.get(lang,'Custo Total') }}
+        </div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--text-primary);line-height:1.2;">R$ {{ "%.2f"|format(custo_total) }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card h-100" style="background:var(--bg-card);border-left:3px solid #a855f7;">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Lucro Total','en':'Total Profit','fr':'Bénéfice Total','de':'Gesamtgewinn'}.get(lang,'Lucro Total') }}
+        </div>
+        <div style="font-size:1.1rem;font-weight:800;color:{% if lucro >= 0 %}var(--success){% else %}var(--danger){% endif %};line-height:1.2;">
+          R$ {{ "%.2f"|format(lucro) }}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="card" style="padding:0">
-  <div class="card-header" style="padding:16px 20px">
-    <span class="card-title">Aves Vendidas</span>
-    <button class="btn btn-primary btn-sm" onclick="openModal('modal-venda')">+ Registrar Venda</button>
+<!-- Tabela -->
+<div class="card" style="padding:0;background:var(--bg-card);">
+  <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-weight:700;color:var(--text-primary);">
+      <i class="bi bi-list-ul" style="color:var(--accent);"></i>
+      {{ {'pt':'Aves Vendidas','en':'Birds Sold','fr':'Oiseaux Vendus','de':'Verkaufte Vögel'}.get(lang,'Aves Vendidas') }}
+    </span>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-venda">
+      <i class="bi bi-plus-circle"></i>
+      {{ {'pt':'Registrar Venda','en':'Register Sale','fr':'Enregistrer Vente','de':'Verkauf Erfassen'}.get(lang,'Registrar Venda') }}
+    </button>
   </div>
-  <div class="tbl-wrap">
-    <table>
+  <div style="overflow-x:auto;">
+    <table class="table table-hover mb-0" style="min-width:800px;">
       <thead>
-        <tr><th>Anilha</th><th>Espécie</th><th>Data</th><th>Comprador</th><th>Vl. Venda</th><th>Custo Total</th><th>Lucro</th><th>Ações</th></tr>
+        <tr>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Anilha','en':'Ring','fr':'Bague','de':'Ring'}.get(lang,'Anilha') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Espécie','en':'Species','fr':'Espèce','de':'Art'}.get(lang,'Espécie') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Data','en':'Date','fr':'Date','de':'Datum'}.get(lang,'Data') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Comprador','en':'Buyer','fr':'Acheteur','de':'Käufer'}.get(lang,'Comprador') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Vl. Venda','en':'Sale Price','fr':'Prix Vente','de':'Verkaufspreis'}.get(lang,'Vl. Venda') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Custo','en':'Cost','fr':'Coût','de':'Kosten'}.get(lang,'Custo') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Lucro','en':'Profit','fr':'Bénéfice','de':'Gewinn'}.get(lang,'Lucro') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Ações','en':'Actions','fr':'Actions','de':'Aktionen'}.get(lang,'Ações') }}
+          </th>
+        </tr>
       </thead>
       <tbody>
         {% for v in vendas %}
         {% set custo = v.ave.custo_total() if v.ave else 0 %}
         {% set lucro_item = (v.valor or 0) - custo %}
-        <tr>
-          <td><strong>{{ v.ave.anilha if v.ave else '-' }}</strong></td>
-          <td>{{ v.ave.especie if v.ave else '-' }}</td>
-          <td>{{ v.data_venda.strftime('%d/%m/%Y') if v.data_venda else '-' }}</td>
-          <td>{{ v.comprador or '-' }}</td>
-          <td>R$ {{ "%.2f"|format(v.valor or 0) }}</td>
-          <td>R$ {{ "%.2f"|format(custo) }}</td>
-          <td style="color:{% if lucro_item >= 0 %}var(--success){% else %}var(--danger){% endif %};font-weight:700">
-            R$ {{ "%.2f"|format(lucro_item) }}
+        <tr style="background:var(--bg-card);">
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            {% if v.ave %}
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:11px;height:11px;border-radius:50%;background:{{ v.ave.cor_anilha or '#52b788' }};display:inline-block;flex-shrink:0;"></span>
+              <strong style="color:var(--text-primary);font-size:0.9rem;">{{ v.ave.anilha }}</strong>
+            </div>
+            {% else %}
+            <span style="color:var(--text-muted);">-</span>
+            {% endif %}
           </td>
-          <td style="white-space:nowrap">
-            <button class="btn btn-outline btn-sm" onclick="verCustos({{ v.id }}, '{{ v.ave.anilha if v.ave else '' }}', {{ custo }}, {{ v.valor or 0 }})">💰 Custos</button>
-            <form method="POST" action="{{ url_for('deletar_venda', id=v.id) }}" style="display:inline" onsubmit="return confirm('Cancelar venda? A ave voltará para Ativo.')">
-              <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;color:var(--text-secondary);font-size:0.875rem;">
+            {{ v.ave.especie if v.ave else '-' }}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;color:var(--text-secondary);font-size:0.875rem;white-space:nowrap;">
+            {{ v.data_venda.strftime('%d/%m/%Y') if v.data_venda else '-' }}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            <div style="color:var(--text-primary);font-size:0.875rem;">{{ v.comprador or '-' }}</div>
+            {% if v.contato %}
+            <div style="color:var(--text-muted);font-size:0.75rem;">{{ v.contato }}</div>
+            {% endif %}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            <strong style="color:var(--text-primary);font-size:0.9rem;">R$ {{ "%.2f"|format(v.valor or 0) }}</strong>
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;color:var(--text-secondary);font-size:0.875rem;">
+            R$ {{ "%.2f"|format(custo) }}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            <strong style="font-size:0.9rem;color:{% if lucro_item >= 0 %}var(--success){% else %}var(--danger){% endif %};">
+              R$ {{ "%.2f"|format(lucro_item) }}
+            </strong>
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;white-space:nowrap;">
+            <button class="btn btn-sm btn-outline-secondary"
+                    onclick="verCustos('{{ v.ave.anilha if v.ave else '' }}', {{ custo }}, {{ v.valor or 0 }})"
+                    title="{{ {'pt':'Ver Custos','en':'View Costs','fr':'Voir Coûts','de':'Kosten Ansehen'}.get(lang,'Ver Custos') }}">
+              <i class="bi bi-cash-stack"></i>
+            </button>
+            <form method="POST" action="{{ url_for('deletar_venda', id=v.id) }}" style="display:inline;"
+                  onsubmit="return confirm('{{ {'pt':'Cancelar venda?','en':'Cancel sale?','fr':'Annuler la vente?','de':'Verkauf stornieren?'}.get(lang,'Cancelar venda?') }}')">
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
             </form>
           </td>
+
         </tr>
         {% else %}
-        <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">Nenhuma venda registrada.</td></tr>
+        <tr style="background:var(--bg-card);">
+          <td colspan="8" style="text-align:center;color:var(--text-muted);padding:50px 16px;border:none;">
+            <div style="font-size:2.5rem;margin-bottom:10px;">💰</div>
+            {{ {'pt':'Nenhuma venda registrada.','en':'No sales registered.','fr':'Aucune vente enregistrée.','de':'Keine Verkäufe registriert.'}.get(lang,'Nenhuma venda registrada.') }}
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-function verCustos(vendaId, anilha, custo, valor){
-  document.getElementById('mc-title').textContent = 'Custos – Ave ' + anilha;
+function verCustos(anilha, custo, valor) {
   const lucro = valor - custo;
+
+  const labelCusto = "{{ {'pt':'CUSTO TOTAL','en':'TOTAL COST','fr':'COUT TOTAL','de':'GESAMTKOSTEN'}.get(lang,'CUSTO TOTAL') }}";
+  const labelVenda = "{{ {'pt':'VALOR VENDA','en':'SALE PRICE','fr':'PRIX VENTE','de':'VERKAUFSPREIS'}.get(lang,'VALOR VENDA') }}";
+  const labelLucro = "{{ {'pt':'LUCRO','en':'PROFIT','fr':'BENEFICE','de':'GEWINN'}.get(lang,'LUCRO') }}";
+  const labelInfo  = "{{ {'pt':'Para adicionar custos, edite a ave no Plantel.','en':'To add costs, edit the bird in Flock.','fr':'Pour ajouter des couts, modifiez dans Cheptel.','de':'Kosten im Bestand bearbeiten.'}.get(lang,'Para adicionar custos, edite a ave no Plantel.') }}";
+
+  document.getElementById('mc-title').textContent = "{{ {'pt':'Custos','en':'Costs','fr':'Couts','de':'Kosten'}.get(lang,'Custos') }} \u2013 " + anilha;
   document.getElementById('mc-body').innerHTML = `
-    <div style="background:var(--bg);padding:12px;border-radius:8px;margin-bottom:16px;font-size:.85rem">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center">
-        <div><div style="color:var(--muted);font-size:.72rem">CUSTO TOTAL</div><div style="font-weight:800;font-size:1.1rem">R$ ${custo.toFixed(2)}</div></div>
-        <div><div style="color:var(--muted);font-size:.72rem">VALOR VENDA</div><div style="font-weight:800;font-size:1.1rem;color:var(--primary)">R$ ${valor.toFixed(2)}</div></div>
-        <div><div style="color:var(--muted);font-size:.72rem">LUCRO</div><div style="font-weight:800;font-size:1.1rem;color:${lucro>=0?'var(--success)':'var(--danger)'}">R$ ${lucro.toFixed(2)}</div></div>
+    <div style="background:var(--bg-secondary);padding:16px;border-radius:10px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;">
+        <div>
+          <div style="color:var(--text-muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">${labelCusto}</div>
+          <div style="font-weight:800;font-size:1.1rem;color:var(--text-primary);">R$ ${custo.toFixed(2)}</div>
+        </div>
+        <div>
+          <div style="color:var(--text-muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">${labelVenda}</div>
+          <div style="font-weight:800;font-size:1.1rem;color:var(--accent);">R$ ${valor.toFixed(2)}</div>
+        </div>
+        <div>
+          <div style="color:var(--text-muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">${labelLucro}</div>
+          <div style="font-weight:800;font-size:1.1rem;color:${lucro >= 0 ? 'var(--success)' : 'var(--danger)'};">R$ ${lucro.toFixed(2)}</div>
+        </div>
       </div>
     </div>
-    <p style="font-size:.85rem;color:var(--muted);text-align:center">Para adicionar custos variados, edite a ave no Plantel.</p>
+    <p style="font-size:0.82rem;color:var(--text-muted);text-align:center;">${labelInfo}</p>
   `;
-  openModal('modal-custos');
+  new bootstrap.Modal(document.getElementById('modal-custos')).show();
 }
 </script>
 {% endblock %}

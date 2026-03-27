@@ -1,40 +1,151 @@
 {% extends "base.html" %}
-{% block title %}Meu Perfil{% endblock %}
-{% block page_title %}Meu Perfil{% endblock %}
+{% block title %}{{ {'pt':'Meu Perfil','en':'My Profile','fr':'Mon Profil','de':'Mein Profil'}.get(lang,'Meu Perfil') }}{% endblock %}
+{% block page_icon %}person-circle{% endblock %}
+{% block page_title %}{{ {'pt':'Meu Perfil','en':'My Profile','fr':'Mon Profil','de':'Mein Profil'}.get(lang,'Meu Perfil') }}{% endblock %}
+
 {% block content %}
-<div style="max-width:580px">
+<div style="max-width:580px;">
+
   {% if msg %}
-  <div class="alert {% if msg_type == 'danger' %}a-danger{% else %}a-success{% endif %}">{{ msg }}</div>
+  <div class="alert {% if msg_type == 'danger' %}alert-danger{% else %}alert-success{% endif %} mb-4"
+       style="border-radius:var(--radius);font-size:0.875rem;">
+    <i class="bi bi-{% if msg_type == 'danger' %}x-circle{% else %}check-circle{% endif %} me-2"></i>
+    {{ msg }}
+  </div>
   {% endif %}
 
-  <div class="card">
-    <div class="card-header"><span class="card-title">Dados Pessoais</span></div>
-    <form method="POST">
-      <input type="hidden" name="acao" value="dados">
-      <div class="fg"><label>Nome Completo</label><input type="text" name="nome" value="{{ usuario.nome }}" required></div>
-      <div class="grid2">
-        <div class="fg"><label>Nome do Criadouro</label><input type="text" name="criadouro" value="{{ usuario.criadouro }}"></div>
-        <div class="fg"><label>CPF / CNPJ</label><input type="text" value="{{ usuario.documento or '' }}" style="background:#f3f4f6" readonly></div>
-      </div>
-      <div class="grid2">
-        <div class="fg"><label>E-mail</label><input type="email" name="email" value="{{ usuario.email }}" required></div>
-        <div class="fg"><label>Telefone</label><input type="text" name="telefone" value="{{ usuario.telefone or '' }}"></div>
-      </div>
-      <button type="submit" class="btn btn-primary">Salvar Dados</button>
-    </form>
+  <!-- Dados Pessoais -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <i class="bi bi-person"></i>
+      {{ {'pt':'Dados Pessoais','en':'Personal Data','fr':'Données Personnelles','de':'Persönliche Daten'}.get(lang,'Dados Pessoais') }}
+    </div>
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="acao" value="dados">
+
+        <div class="mb-3">
+          <label class="form-label">
+            {{ {'pt':'Nome Completo','en':'Full Name','fr':'Nom Complet','de':'Vollständiger Name'}.get(lang,'Nome Completo') }}
+          </label>
+          <input type="text" class="form-control" name="nome"
+                 value="{{ usuario.nome }}" required>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label">
+              {{ {'pt':'Nome do Criadouro','en':'Breeder Name','fr':'Nom de l\'Élevage','de':'Name des Züchters'}.get(lang,'Nome do Criadouro') }}
+            </label>
+            <input type="text" class="form-control" name="criadouro"
+                   value="{{ usuario.criadouro }}">
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">
+              {{ {'pt':'CPF / CNPJ','en':'Tax ID','fr':'Numéro Fiscal','de':'Steuernummer'}.get(lang,'CPF / CNPJ') }}
+            </label>
+            <input type="text" class="form-control"
+                   value="{{ usuario.documento or '' }}"
+                   style="background:var(--bg-secondary);color:var(--text-muted);" readonly>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6">
+            <label class="form-label">E-mail</label>
+            <input type="email" class="form-control" name="email"
+                   value="{{ usuario.email }}" required>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">
+              {{ {'pt':'Telefone','en':'Phone','fr':'Téléphone','de':'Telefon'}.get(lang,'Telefone') }}
+            </label>
+            <input type="text" class="form-control" name="telefone"
+                   value="{{ usuario.telefone or '' }}"
+                   placeholder="(00) 00000-0000">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-circle me-1"></i>
+          {{ {'pt':'Salvar Dados','en':'Save Data','fr':'Enregistrer','de':'Daten Speichern'}.get(lang,'Salvar Dados') }}
+        </button>
+
+      </form>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="card-header"><span class="card-title">Alterar Senha</span></div>
-    <form method="POST">
-      <input type="hidden" name="acao" value="senha">
-      <div class="fg"><label>Senha Atual</label><input type="password" name="senha_atual" placeholder="••••••••" required></div>
-      <div class="grid2">
-        <div class="fg"><label>Nova Senha</label><input type="password" name="senha_nova" placeholder="••••••••" required></div>
-        <div class="fg"><label>Confirmar Nova Senha</label><input type="password" name="senha_nova2" placeholder="••••••••" required></div>
-      </div>
-      <button type="submit" class="btn btn-accent">Alterar Senha</button>
-    </form>
+  <!-- Alterar Senha -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <i class="bi bi-lock"></i>
+      {{ {'pt':'Alterar Senha','en':'Change Password','fr':'Changer le Mot de Passe','de':'Passwort Ändern'}.get(lang,'Alterar Senha') }}
+    </div>
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="acao" value="senha">
+
+        <div class="mb-3">
+          <label class="form-label">
+            {{ {'pt':'Senha Atual','en':'Current Password','fr':'Mot de Passe Actuel','de':'Aktuelles Passwort'}.get(lang,'Senha Atual') }}
+          </label>
+          <input type="password" class="form-control" name="senha_atual"
+                 placeholder="••••••••" required>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6">
+            <label class="form-label">
+              {{ {'pt':'Nova Senha','en':'New Password','fr':'Nouveau Mot de Passe','de':'Neues Passwort'}.get(lang,'Nova Senha') }}
+            </label>
+            <input type="password" class="form-control" name="senha_nova"
+                   placeholder="••••••••" required>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">
+              {{ {'pt':'Confirmar Nova Senha','en':'Confirm New Password','fr':'Confirmer le Mot de Passe','de':'Passwort Bestätigen'}.get(lang,'Confirmar Nova Senha') }}
+            </label>
+            <input type="password" class="form-control" name="senha_nova2"
+                   placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-warning" style="color:#000;">
+          <i class="bi bi-lock me-1"></i>
+          {{ {'pt':'Alterar Senha','en':'Change Password','fr':'Changer le Mot de Passe','de':'Passwort Ändern'}.get(lang,'Alterar Senha') }}
+        </button>
+
+      </form>
+    </div>
   </div>
+
+  <!-- Preferências de Idioma -->
+  <div class="card">
+    <div class="card-header">
+      <i class="bi bi-translate"></i>
+      {{ {'pt':'Idioma','en':'Language','fr':'Langue','de':'Sprache'}.get(lang,'Idioma') }}
+    </div>
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="acao" value="idioma">
+        <div class="mb-4">
+          <label class="form-label">
+            {{ {'pt':'Selecione o idioma da interface','en':'Select interface language','fr':'Sélectionnez la langue','de':'Sprache auswählen'}.get(lang,'Selecione o idioma da interface') }}
+          </label>
+          <select class="form-select" name="lang">
+            <option value="pt" {{ 'selected' if lang == 'pt' }}>🇧🇷 Português</option>
+            <option value="en" {{ 'selected' if lang == 'en' }}>🇺🇸 English</option>
+            <option value="fr" {{ 'selected' if lang == 'fr' }}>🇫🇷 Français</option>
+            <option value="de" {{ 'selected' if lang == 'de' }}>🇩🇪 Deutsch</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-circle me-1"></i>
+          {{ {'pt':'Aplicar Idioma','en':'Apply Language','fr':'Appliquer la Langue','de':'Sprache Anwenden'}.get(lang,'Aplicar Idioma') }}
+        </button>
+      </form>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

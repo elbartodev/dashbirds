@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}{{ {'pt':'Cruzamentos','en':'Pairings','fr':'Croisements','de':'Kreuzungen'}.get(lang,'Cruzamentos') }}{% endblock %}
+{% block page_icon %}diagram-3{% endblock %}
+{% block page_title %}{{ {'pt':'Cruzamentos','en':'Pairings','fr':'Croisements','de':'Kreuzungen'}.get(lang,'Cruzamentos') }}{% endblock %}
+
+{% block content %}
+
+<div class="card" style="padding:20px;background:var(--bg-card);">
+  <div style="font-weight:700;color:var(--text-primary);font-size:1.1rem;margin-bottom:15px;">
+    {{ {'pt':'Simulador de Cruzamentos','en':'Pairing Simulator','fr':'Simulateur de Croisements','de':'Kreuzungssimulator'}.get(lang,'Simulador de Cruzamentos') }}
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <label class="form-label">{{ {'pt':'Macho','en':'Male','fr':'Mâle','de':'Männchen'}.get(lang,'Macho') }}</label>
+      <select class="form-select" id="macho-select">
+        <option value="">-- {{ {'pt':'Selecione um macho','en':'Select a male','fr':'Sélectionner un mâle','de':'Männchen auswählen'}.get(lang,'Selecione um macho') }} --</option>
+        {% for ave in machos %}
+        <option value="{{ ave.id }}" data-especie="{{ ave.especie }}" data-genetica="{{ ave.genetica }}">{{ ave.anilha }} - {{ ave.especie }} ({{ ave.genetica or 'N/A' }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">{{ {'pt':'Fêmea','en':'Female','fr':'Femelle','de':'Weibchen'}.get(lang,'Fêmea') }}</label>
+      <select class="form-select" id="femea-select">
+        <option value="">-- {{ {'pt':'Selecione uma fêmea','en':'Select a female','fr':'Sélectionner une femelle','de':'Weibchen auswählen'}.get(lang,'Selecione uma fêmea') }} --</option>
+        {% for ave in femeas %}
+        <option value="{{ ave.id }}" data-especie="{{ ave.especie }}" data-genetica="{{ ave.genetica }}">{{ ave.anilha }} - {{ ave.especie }} ({{ ave.genetica or 'N/A' }})</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <button class="btn btn-primary" id="simular-btn" disabled>
+      <i class="bi bi-shuffle"></i>
+      {{ {'pt':'Simular Cruzamento','en':'Simulate Pairing','fr':'Simuler Croisement','de':'Kreuzung Simulieren'}.get(lang,'Simular Cruzamento') }}
+    </button>
+    <button class="btn btn-outline-secondary" id="limpar-btn">
+      <i class="bi bi-x-circle"></i>
+      {{ {'pt':'Limpar','en':'Clear','fr':'Effacer','de':'Löschen'}.get(lang,'Limpar') }}
+    </button>
+  </div>
+
+  <div id="resultado-cruzamento" style="margin-top:30px;padding-top:20px;border-top:1px solid var(--border-color);">
+    <div style="text-align:center;color:var(--text-muted);font-style:italic;">
+      {{ {'pt':'Selecione um macho e uma fêmea para simular.','en':'Select a male and a female to simulate.','fr':'Sélectionnez un mâle et une femelle pour simuler.','de':'Wählen Sie ein Männchen und ein Weibchen zur Simulation aus.'}.get(lang,'Selecione um macho e uma fêmea para simular.') }}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const machoSelect = document.getElementById('macho-select');
+  const femeaSelect = document.getElementById('femea-select');
+  const simularBtn = document.getElementById('simular-btn');
+  const limparBtn = document.getElementById('limpar-btn');
+  const resultadoDiv = document.getElementById('resultado-cruzamento');
+
+  function updateSimulateButton() {
+    simularBtn.disabled = !(machoSelect.value && femeaSelect.value);
+  }
+
+  function simulatePairing() {
+    const machoEspecie = machoSelect.options[machoSelect.selectedIndex].dataset.especie;
+    const machoGenetica = machoSelect.options[machoSelect.selectedIndex].dataset.genetica;
+    const femeaEspecie = femeaSelect.options[femeaSelect.selectedIndex].dataset.especie;
+    const femeaGenetica = femeaSelect.options[femeaSelect.selectedIndex].dataset.genetica;
+
+    let html = '';
+    let titulo = '';
+    let corTitulo = 'var(--text-primary)';
+
+    if (machoEspecie !== femeaEspecie) {
+      titulo = "{{ {'pt':'Incompatibilidade de Espécies','en':'Species Mismatch','fr':'Incompatibilité d\'Espèces','de':'Artinkompatibilität'}.get(lang,'Incompatibilidade de Espécies') }}";
+      corTitulo = 'var(--danger)';
+      html = `<p style="color:var(--text-muted);text-align:center;">
+                {{ {'pt':'As aves selecionadas são de espécies diferentes.','en':'Selected birds are of different species.','fr':'Les oiseaux sélectionnés sont d\'espèces différentes.','de':'Ausgewählte Vögel sind unterschiedlicher Arten.'}.get(lang,'As aves selecionadas são de espécies diferentes.') }}
+              </p>`;
+    } else {
+      titulo = "{{ {'pt':'Resultado da Simulação','en':'Simulation Result','fr':'Résultat de la Simulation','de':'Simulationsergebnis'}.get(lang,'Resultado da Simulação') }}";
+      corTitulo = 'var(--success)';
+      html += `<p style="color:var(--text-secondary);font-size:0.9rem;text-align:center;">
+                 {{ {'pt':'Espécie','en':'Species','fr':'Espèce','de':'Art'}.get(lang,'Espécie') }}: <strong>${machoEspecie}</strong>
+               </p>`;
+
+      // Lógica de genética simplificada (exemplo)
+      let geneticaFilhotes = '';
+      if (machoGenetica && femeaGenetica && machoGenetica === femeaGenetica) {
+        geneticaFilhotes = machoGenetica;
+      } else if (machoGenetica && !femeaGenetica) {
+        geneticaFilhotes = `50% ${machoGenetica}, 50% Normal`;
+      } else if (!machoGenetica && femeaGenetica) {
+        geneticaFilhotes = `50% ${femeaGenetica}, 50% Normal`;
+      } else if (machoGenetica && femeaGenetica && machoGenetica !== femeaGenetica) {
+        geneticaFilhotes = `${machoGenetica} x ${femeaGenetica} (possíveis combinações)`;
+      } else {
+        geneticaFilhotes = "{{ {'pt':'Normal','en':'Normal','fr':'Normal','de':'Normal'}.get(lang,'Normal') }}";
+      }
+
+      html += `<div style="background:var(--bg-secondary);padding:15px;border-radius:8px;margin-top:20px;text-align:center;">
+                 <div style="font-weight:600;color:var(--text-primary);margin-bottom:8px;">
+                   {{ {'pt':'Genética dos Filhotes','en':'Chick Genetics','fr':'Génétique des Poussins','de':'Küken-Genetik'}.get(lang,'Genética dos Filhotes') }}
+                 </div>
+                 <p style="color:var(--text-secondary);font-size:1rem;">${geneticaFilhotes}</p>
+                 <p style="color:var(--text-muted);font-size:0.75rem;margin-top:15px;">
+                   {{ {'pt':'Esta é uma simulação simplificada. Consulte um especialista para análises genéticas complexas.','en':'This is a simplified simulation. Consult an expert for complex genetic analysis.','fr':'Ceci est une simulation simplifiée. Consultez un expert pour une analyse génétique complexe.','de':'Dies ist eine vereinfachte simulation. Konsultieren Sie einen Experten für komplexe genetische Analysen.'}.get(lang,'Esta é uma simulação simplificada. Consulte um especialista para análises genéticas complexas.') }}
+                 </p>
+               </div>`;
+    }
+
+    resultadoDiv.innerHTML = `
+      <h5 style="color:${corTitulo};font-size:1.1rem;font-weight:700;text-align:center;margin-bottom:20px;">${titulo}</h5>
+      ${html}
+    `;
+  }
+
+  function clearSelection() {
+    machoSelect.value = '';
+    femeaSelect.value = '';
+    resultadoDiv.innerHTML = `
+      <div style="text-align:center;color:var(--text-muted);font-style:italic;">
+        {{ {'pt':'Selecione um macho e uma fêmea para simular.','en':'Select a male and a female to simulate.','fr':'Sélectionnez un mâle et une femelle pour simuler.','de':'Wählen Sie ein Männchen und ein Weibchen zur Simulation aus.'}.get(lang,'Selecione um macho e uma fêmea para simular.') }}
+      </div>
+    `;
+    updateSimulateButton();
+  }
+
+  machoSelect.addEventListener('change', updateSimulateButton);
+  femeaSelect.addEventListener('change', updateSimulateButton);
+  simularBtn.addEventListener('click', simulatePairing);
+  limparBtn.addEventListener('click', clearSelection);
+
+  // Initial state
+  updateSimulateButton();
+</script>
+{% endblock %}

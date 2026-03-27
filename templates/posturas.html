@@ -1,119 +1,267 @@
 {% extends "base.html" %}
-{% block title %}Posturas{% endblock %}
-{% block page_title %}Posturas{% endblock %}
+{% block title %}{{ {'pt':'Posturas','en':'Clutches','fr':'Pontes','de':'Gelege'}.get(lang,'Posturas') }}{% endblock %}
+{% block page_icon %}egg{% endblock %}
+{% block page_title %}{{ {'pt':'Posturas','en':'Clutches','fr':'Pontes','de':'Gelege'}.get(lang,'Posturas') }}{% endblock %}
+
 {% block content %}
 
-<div class="modal-bg" id="modal-postura">
-  <div class="modal-box">
-    <div class="modal-head"><h4 id="mp-title">Nova Postura</h4><button class="close-x" onclick="closeModal('modal-postura')">×</button></div>
-    <form method="POST" id="form-postura" action="{{ url_for('nova_postura') }}">
-      <div class="modal-body">
-        <div class="grid2">
-          <div class="fg"><label>Fêmea (Anilha)</label>
-            <select name="femea_id">
-              <option value="">-- Selecione --</option>
-              {% for a in femeas %}<option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>{% endfor %}
-            </select>
-          </div>
-          <div class="fg"><label>Macho (Anilha)</label>
-            <select name="macho_id">
-              <option value="">-- Selecione --</option>
-              {% for a in machos %}<option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>{% endfor %}
-            </select>
-          </div>
-        </div>
-        <div class="grid2">
-          <div class="fg"><label>Data da Postura</label><input type="date" name="data_postura"></div>
-          <div class="fg"><label>Gaiola</label>
-            <select name="gaiola_id">
-              <option value="">-- Selecione --</option>
-              {% for g in gaiolas %}<option value="{{ g.id }}">{{ g.nome }}</option>{% endfor %}
-            </select>
-          </div>
-        </div>
-        <div class="grid3">
-          <div class="fg"><label>Total de Ovos</label><input type="number" name="total_ovos" placeholder="0" min="0" value="0"></div>
-          <div class="fg"><label>Fecundados</label><input type="number" name="ovos_fecundados" placeholder="0" min="0" value="0"></div>
-          <div class="fg"><label>Eclodidos</label><input type="number" name="ovos_eclodidos" placeholder="0" min="0" value="0"></div>
-        </div>
-        <div class="fg"><label>Status</label>
-          <select name="status">
-            <option>Em andamento</option><option>Incubação</option><option>Eclosão</option><option>Encerrada</option>
-          </select>
-        </div>
-        <div class="fg"><label>Observações</label><textarea name="observacoes" rows="2"></textarea></div>
+<!-- Modal Postura -->
+<div class="modal fade" id="modal-postura" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border-color);background:var(--bg-card);">
+        <h5 class="modal-title" id="mp-title" style="color:var(--text-primary);font-size:1rem;font-weight:700;">
+          {{ {'pt':'Nova Postura','en':'New Clutch','fr':'Nouvelle Ponte','de':'Neues Gelege'}.get(lang,'Nova Postura') }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-foot">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-postura')">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Salvar</button>
-      </div>
-    </form>
+      <form method="POST" id="form-postura" action="{{ url_for('nova_postura') }}">
+        <div class="modal-body" style="background:var(--bg-card);">
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Fêmea','en':'Female','fr':'Femelle','de':'Weibchen'}.get(lang,'Fêmea') }}</label>
+              <select class="form-select" name="femea_id" id="p-femea">
+                <option value="">-- {{ {'pt':'Selecione','en':'Select','fr':'Sélectionner','de':'Auswählen'}.get(lang,'Selecione') }} --</option>
+                {% for a in femeas %}
+                <option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Macho','en':'Male','fr':'Mâle','de':'Männchen'}.get(lang,'Macho') }}</label>
+              <select class="form-select" name="macho_id" id="p-macho">
+                <option value="">-- {{ {'pt':'Selecione','en':'Select','fr':'Sélectionner','de':'Auswählen'}.get(lang,'Selecione') }} --</option>
+                {% for a in machos %}
+                <option value="{{ a.id }}">{{ a.anilha }} – {{ a.especie }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Data da Postura','en':'Clutch Date','fr':'Date de Ponte','de':'Gelegedatum'}.get(lang,'Data da Postura') }}</label>
+              <input type="date" class="form-control" name="data_postura" id="p-data">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Gaiola','en':'Cage','fr':'Cage','de':'Käfig'}.get(lang,'Gaiola') }}</label>
+              <select class="form-select" name="gaiola_id" id="p-gaiola">
+                <option value="">-- {{ {'pt':'Selecione','en':'Select','fr':'Sélectionner','de':'Auswählen'}.get(lang,'Selecione') }} --</option>
+                {% for g in gaiolas %}
+                <option value="{{ g.id }}">{{ g.nome }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+              <label class="form-label">{{ {'pt':'Total de Ovos','en':'Total Eggs','fr':'Total Œufs','de':'Eier gesamt'}.get(lang,'Total de Ovos') }}</label>
+              <input type="number" class="form-control" name="total_ovos" id="p-ovos" min="0" value="0">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label">{{ {'pt':'Fecundados','en':'Fertilized','fr':'Fécondés','de':'Befruchtet'}.get(lang,'Fecundados') }}</label>
+              <input type="number" class="form-control" name="ovos_fecundados" id="p-fec" min="0" value="0">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label">{{ {'pt':'Eclodidos','en':'Hatched','fr':'Éclos','de':'Geschlüpft'}.get(lang,'Eclodidos') }}</label>
+              <input type="number" class="form-control" name="ovos_eclodidos" id="p-ecl" min="0" value="0">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status" id="p-status">
+              <option value="Em andamento">{{ {'pt':'Em andamento','en':'In progress','fr':'En cours','de':'Laufend'}.get(lang,'Em andamento') }}</option>
+              <option value="Incubação">{{ {'pt':'Incubação','en':'Incubation','fr':'Incubation','de':'Bebrütung'}.get(lang,'Incubação') }}</option>
+              <option value="Eclosão">{{ {'pt':'Eclosão','en':'Hatching','fr':'Éclosion','de':'Schlupf'}.get(lang,'Eclosão') }}</option>
+              <option value="Encerrada">{{ {'pt':'Encerrada','en':'Closed','fr':'Terminée','de':'Abgeschlossen'}.get(lang,'Encerrada') }}</option>
+            </select>
+          </div>
+
+          <div class="mb-1">
+            <label class="form-label">{{ {'pt':'Observações','en':'Notes','fr':'Observations','de':'Anmerkungen'}.get(lang,'Observações') }}</label>
+            <textarea class="form-control" name="observacoes" id="p-obs" rows="2"></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="border-top:1px solid var(--border-color);background:var(--bg-card);">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            {{ {'pt':'Cancelar','en':'Cancel','fr':'Annuler','de':'Abbrechen'}.get(lang,'Cancelar') }}
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ {'pt':'Salvar','en':'Save','fr':'Enregistrer','de':'Speichern'}.get(lang,'Salvar') }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
-<div style="display:flex;justify-content:flex-end;margin-bottom:16px">
-  <button class="btn btn-primary btn-sm" onclick="openModal('modal-postura')">+ Nova Postura</button>
+<!-- Topo -->
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-postura" onclick="resetPosturaModal()">
+    <i class="bi bi-plus-circle"></i>
+    {{ {'pt':'Nova Postura','en':'New Clutch','fr':'Nouvelle Ponte','de':'Neues Gelege'}.get(lang,'Nova Postura') }}
+  </button>
 </div>
 
-<div class="card" style="padding:0">
-  <div class="tbl-wrap">
-    <table>
+<!-- Tabela -->
+<div class="card" style="padding:0;background:var(--bg-card);">
+  <div style="overflow-x:auto;">
+    <table class="table table-hover mb-0" style="min-width:860px;">
       <thead>
-        <tr><th>#</th><th>Fêmea</th><th>Macho</th><th>Data</th><th>Ovos</th><th>Fecund.</th><th>Eclodidos</th><th>Gaiola</th><th>Status</th><th>Ações</th></tr>
+        <tr>
+          {% for col in ['#','Fêmea','Macho','Data','Ovos','Fecund.','Eclodidos','Gaiola','Status','Ações'] %}
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {% if col == 'Fêmea' %}{{ {'pt':'Fêmea','en':'Female','fr':'Femelle','de':'Weibchen'}.get(lang,'Fêmea') }}
+            {% elif col == 'Macho' %}{{ {'pt':'Macho','en':'Male','fr':'Mâle','de':'Männchen'}.get(lang,'Macho') }}
+            {% elif col == 'Data' %}{{ {'pt':'Data','en':'Date','fr':'Date','de':'Datum'}.get(lang,'Data') }}
+            {% elif col == 'Ovos' %}{{ {'pt':'Ovos','en':'Eggs','fr':'Œufs','de':'Eier'}.get(lang,'Ovos') }}
+            {% elif col == 'Fecund.' %}{{ {'pt':'Fecund.','en':'Fert.','fr':'Féc.','de':'Bef.'}.get(lang,'Fecund.') }}
+            {% elif col == 'Eclodidos' %}{{ {'pt':'Eclodidos','en':'Hatched','fr':'Éclos','de':'Geschlüpft'}.get(lang,'Eclodidos') }}
+            {% elif col == 'Gaiola' %}{{ {'pt':'Gaiola','en':'Cage','fr':'Cage','de':'Käfig'}.get(lang,'Gaiola') }}
+            {% elif col == 'Ações' %}{{ {'pt':'Ações','en':'Actions','fr':'Actions','de':'Aktionen'}.get(lang,'Ações') }}
+            {% else %}{{ col }}{% endif %}
+          </th>
+          {% endfor %}
+        </tr>
       </thead>
       <tbody>
         {% for p in posturas %}
-        <tr>
-          <td>#{{ p.id }}</td>
-          <td>{{ p.femea.anilha if p.femea else '-' }}</td>
-          <td>{{ p.macho.anilha if p.macho else '-' }}</td>
-          <td>{{ p.data_postura.strftime('%d/%m/%Y') if p.data_postura else '-' }}</td>
-          <td>{{ p.total_ovos }}</td>
-          <td>{{ p.ovos_fecundados }}</td>
-          <td>
-            <strong>{{ p.ovos_eclodidos }}</strong>
-            {% if p.filhotes|length > 0 %}
-            <a href="{{ url_for('bercario') }}" style="font-size:.72rem;color:var(--primary)"> → ver berçário</a>
+        <tr style="background:var(--bg-card);">
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;color:var(--text-muted);font-size:0.82rem;">#{{ p.id }}</td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            {% if p.femea %}
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="width:9px;height:9px;border-radius:50%;background:{{ p.femea.cor_anilha or '#f59e0b' }};display:inline-block;flex-shrink:0;"></span>
+              <span style="color:var(--text-primary);font-size:0.875rem;font-weight:600;">{{ p.femea.anilha }}</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:0.72rem;margin-left:15px;">{{ p.femea.especie }}</div>
+            {% else %}
+            <span style="color:var(--text-muted);font-size:0.82rem;">-</span>
             {% endif %}
           </td>
-          <td>{{ p.gaiola.nome if p.gaiola else '-' }}</td>
-          <td>
-            {% if p.status == 'Encerrada' %}<span class="badge b-gray">Encerrada</span>
-            {% elif p.status == 'Eclosão' %}<span class="badge b-green">Eclosão</span>
-            {% elif p.status == 'Incubação' %}<span class="badge b-orange">Incubação</span>
-            {% else %}<span class="badge b-blue">Em andamento</span>{% endif %}
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            {% if p.macho %}
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="width:9px;height:9px;border-radius:50%;background:{{ p.macho.cor_anilha or '#38bdf8' }};display:inline-block;flex-shrink:0;"></span>
+              <span style="color:var(--text-primary);font-size:0.875rem;font-weight:600;">{{ p.macho.anilha }}</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:0.72rem;margin-left:15px;">{{ p.macho.especie }}</div>
+            {% else %}
+            <span style="color:var(--text-muted);font-size:0.82rem;">-</span>
+            {% endif %}
           </td>
-          <td style="white-space:nowrap">
-            <button class="btn btn-outline btn-sm" onclick="editPostura({{ p.id }}, '{{ p.femea_id or '' }}', '{{ p.macho_id or '' }}', '{{ p.gaiola_id or '' }}', '{{ p.data_postura or '' }}', {{ p.total_ovos }}, {{ p.ovos_fecundados }}, {{ p.ovos_eclodidos }}, '{{ p.status }}', '{{ p.observacoes or '' }}')">✏️</button>
-            <form method="POST" action="{{ url_for('deletar_postura', id=p.id) }}" style="display:inline" onsubmit="return confirm('Deletar postura #{{ p.id }}?')">
-              <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;color:var(--text-secondary);font-size:0.875rem;white-space:nowrap;">
+            {{ p.data_postura.strftime('%d/%m/%Y') if p.data_postura else '-' }}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;text-align:center;">
+            <strong style="color:var(--text-primary);font-size:0.95rem;">{{ p.total_ovos }}</strong>
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;text-align:center;">
+            <span style="color:var(--text-secondary);font-size:0.875rem;">{{ p.ovos_fecundados }}</span>
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;text-align:center;">
+            <strong style="color:var(--success);font-size:0.95rem;">{{ p.ovos_eclodidos }}</strong>
+            {% if p.filhotes|length > 0 %}
+            <div>
+              <a href="{{ url_for('bercario') }}" style="font-size:0.68rem;color:var(--accent);">
+                → {{ {'pt':'berçário','en':'nursery','fr':'pouponnière','de':'aufzucht'}.get(lang,'berçário') }}
+              </a>
+            </div>
+            {% endif %}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;color:var(--text-secondary);font-size:0.875rem;">
+            {{ p.gaiola_p.nome if p.gaiola_p else '-' }}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            {% if p.status == 'Encerrada' %}
+              <span style="background:var(--bg-hover);color:var(--text-muted);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;">
+                {{ {'pt':'Encerrada','en':'Closed','fr':'Terminée','de':'Abgeschlossen'}.get(lang,'Encerrada') }}
+              </span>
+            {% elif p.status == 'Eclosão' %}
+              <span style="background:var(--success-soft);color:var(--success);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;">
+                {{ {'pt':'Eclosão','en':'Hatching','fr':'Éclosion','de':'Schlupf'}.get(lang,'Eclosão') }}
+              </span>
+            {% elif p.status == 'Incubação' %}
+              <span style="background:var(--warning-soft);color:var(--warning);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;">
+                {{ {'pt':'Incubação','en':'Incubation','fr':'Incubation','de':'Bebrütung'}.get(lang,'Incubação') }}
+              </span>
+            {% else %}
+              <span style="background:var(--info-soft);color:var(--info);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;">
+                {{ {'pt':'Em andamento','en':'In progress','fr':'En cours','de':'Laufend'}.get(lang,'Em andamento') }}
+              </span>
+            {% endif %}
+          </td>
+
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;white-space:nowrap;">
+            <button class="btn btn-sm btn-outline-secondary"
+                    onclick="editPostura({{ p.id }},'{{ p.femea_id or '' }}','{{ p.macho_id or '' }}','{{ p.gaiola_id or '' }}','{{ p.data_postura or '' }}',{{ p.total_ovos }},{{ p.ovos_fecundados }},{{ p.ovos_eclodidos }},'{{ p.status }}','{{ (p.observacoes or '')|replace("'","") }}')"
+                    title="{{ {'pt':'Editar','en':'Edit','fr':'Modifier','de':'Bearbeiten'}.get(lang,'Editar') }}">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <form method="POST" action="{{ url_for('deletar_postura', id=p.id) }}" style="display:inline;"
+                  onsubmit="return confirm('{{ {'pt':'Deletar postura','en':'Delete clutch','fr':'Supprimer ponte','de':'Gelege löschen'}.get(lang,'Deletar') }} #{{ p.id }}?')">
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
             </form>
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">Nenhuma postura registrada.</td></tr>
+        <tr style="background:var(--bg-card);">
+          <td colspan="10" style="text-align:center;color:var(--text-muted);padding:50px 16px;border:none;">
+            <div style="font-size:2.5rem;margin-bottom:10px;">🥚</div>
+            {{ {'pt':'Nenhuma postura registrada.','en':'No clutches registered.','fr':'Aucune ponte enregistrée.','de':'Keine Gelege registriert.'}.get(lang,'Nenhuma postura registrada.') }}
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-function editPostura(id, fid, mid, gid, data, ovos, fec, ecl, status, obs){
+function resetPosturaModal() {
+  document.getElementById('form-postura').action = "{{ url_for('nova_postura') }}";
+  document.getElementById('mp-title').textContent = "{{ {'pt':'Nova Postura','en':'New Clutch','fr':'Nouvelle Ponte','de':'Neues Gelege'}.get(lang,'Nova Postura') }}";
+  document.getElementById('p-femea').value = '';
+  document.getElementById('p-macho').value = '';
+  document.getElementById('p-gaiola').value = '';
+  document.getElementById('p-data').value = '';
+  document.getElementById('p-ovos').value = 0;
+  document.getElementById('p-fec').value = 0;
+  document.getElementById('p-ecl').value = 0;
+  document.getElementById('p-status').value = 'Em andamento';
+  document.getElementById('p-obs').value = '';
+}
+
+function editPostura(id, fid, mid, gid, data, ovos, fec, ecl, status, obs) {
   document.getElementById('form-postura').action = '/postura/editar/' + id;
-  document.getElementById('mp-title').textContent = 'Editar Postura #' + id;
-  document.querySelector('[name="femea_id"]').value = fid;
-  document.querySelector('[name="macho_id"]').value = mid;
-  document.querySelector('[name="gaiola_id"]').value = gid;
-  document.querySelector('[name="data_postura"]').value = data;
-  document.querySelector('[name="total_ovos"]').value = ovos;
-  document.querySelector('[name="ovos_fecundados"]').value = fec;
-  document.querySelector('[name="ovos_eclodidos"]').value = ecl;
-  document.querySelector('[name="status"]').value = status;
-  document.querySelector('[name="observacoes"]').value = obs;
-  openModal('modal-postura');
+  document.getElementById('mp-title').textContent = '{{ {'pt':'Editar Postura','en':'Edit Clutch','fr':'Modifier Ponte','de':'Gelege Bearbeiten'}.get(lang,'Editar Postura') }} #' + id;
+  document.getElementById('p-femea').value = fid;
+  document.getElementById('p-macho').value = mid;
+  document.getElementById('p-gaiola').value = gid;
+  document.getElementById('p-data').value = data;
+  document.getElementById('p-ovos').value = ovos;
+  document.getElementById('p-fec').value = fec;
+  document.getElementById('p-ecl').value = ecl;
+  document.getElementById('p-status').value = status;
+  document.getElementById('p-obs').value = obs;
+  new bootstrap.Modal(document.getElementById('modal-postura')).show();
 }
 </script>
 {% endblock %}

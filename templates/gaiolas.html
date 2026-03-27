@@ -1,133 +1,262 @@
 {% extends "base.html" %}
-{% block title %}Gaiolas{% endblock %}
-{% block page_title %}Gaiolas{% endblock %}
+{% block title %}{{ {'pt':'Gaiolas','en':'Cages','fr':'Cages','de':'Käfige'}.get(lang,'Gaiolas') }}{% endblock %}
+{% block page_icon %}grid-3x3-gap{% endblock %}
+{% block page_title %}{{ {'pt':'Gaiolas','en':'Cages','fr':'Cages','de':'Käfige'}.get(lang,'Gaiolas') }}{% endblock %}
+
 {% block content %}
 
-<!-- Modal Nova Gaiola -->
-<div class="modal-bg" id="modal-gaiola">
-  <div class="modal-box" style="max-width:480px">
-    <div class="modal-head"><h4 id="modal-g-title">Nova Gaiola</h4><button class="close-x" onclick="closeModal('modal-gaiola')">×</button></div>
-    <form method="POST" id="form-gaiola" action="{{ url_for('nova_gaiola') }}">
-      <div class="modal-body">
-        <div class="grid2">
-          <div class="fg"><label>Nome / Número *</label><input type="text" name="nome" id="g-nome" placeholder="Gaiola 01" required></div>
-          <div class="fg"><label>Tipo</label>
-            <select name="tipo" id="g-tipo">
-              <option>Reprodução</option><option>Alojamento</option><option>Quarentena</option><option>Berçário</option>
-            </select>
+<!-- Modal Nova/Editar Gaiola -->
+<div class="modal fade" id="modal-gaiola" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border-color);background:var(--bg-card);">
+        <h5 class="modal-title" id="modal-g-title" style="color:var(--text-primary);font-size:1rem;font-weight:700;">
+          {{ {'pt':'Nova Gaiola','en':'New Cage','fr':'Nouvelle Cage','de':'Neuer Käfig'}.get(lang,'Nova Gaiola') }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" id="form-gaiola" action="{{ url_for('nova_gaiola') }}">
+        <div class="modal-body" style="background:var(--bg-card);">
+          <div class="row g-3 mb-3">
+            <div class="col-sm-7">
+              <label class="form-label">{{ {'pt':'Nome / Número','en':'Name / Number','fr':'Nom / Numéro','de':'Name / Nummer'}.get(lang,'Nome / Número') }} *</label>
+              <input type="text" class="form-control" name="nome" id="g-nome"
+                     placeholder="Gaiola 01" required>
+            </div>
+            <div class="col-sm-5">
+              <label class="form-label">{{ {'pt':'Tipo','en':'Type','fr':'Type','de':'Typ'}.get(lang,'Tipo') }}</label>
+              <select class="form-select" name="tipo" id="g-tipo">
+                <option value="Reprodução">{{ {'pt':'Reprodução','en':'Breeding','fr':'Reproduction','de':'Zucht'}.get(lang,'Reprodução') }}</option>
+                <option value="Alojamento">{{ {'pt':'Alojamento','en':'Housing','fr':'Hébergement','de':'Unterkunft'}.get(lang,'Alojamento') }}</option>
+                <option value="Quarentena">{{ {'pt':'Quarentena','en':'Quarantine','fr':'Quarantaine','de':'Quarantäne'}.get(lang,'Quarentena') }}</option>
+                <option value="Berçário">{{ {'pt':'Berçário','en':'Nursery','fr':'Pouponnière','de':'Aufzucht'}.get(lang,'Berçário') }}</option>
+              </select>
+            </div>
           </div>
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Capacidade','en':'Capacity','fr':'Capacité','de':'Kapazität'}.get(lang,'Capacidade') }}</label>
+              <input type="number" class="form-control" name="capacidade" id="g-cap" placeholder="2" min="1" value="2">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">{{ {'pt':'Localização','en':'Location','fr':'Emplacement','de':'Standort'}.get(lang,'Localização') }}</label>
+              <input type="text" class="form-control" name="localizacao" id="g-local" placeholder="Setor A">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">{{ {'pt':'Observações','en':'Notes','fr':'Observations','de':'Anmerkungen'}.get(lang,'Observações') }}</label>
+            <textarea class="form-control" name="observacoes" id="g-obs" rows="2"></textarea>
+          </div>
+          <input type="hidden" name="gaiola_id" id="g-edit-id" value="">
         </div>
-        <div class="grid2">
-          <div class="fg"><label>Capacidade Máxima</label><input type="number" name="capacidade" id="g-cap" placeholder="2" min="1"></div>
-          <div class="fg"><label>Localização</label><input type="text" name="localizacao" id="g-local" placeholder="Setor A"></div>
+        <div class="modal-footer" style="border-top:1px solid var(--border-color);background:var(--bg-card);">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            {{ {'pt':'Cancelar','en':'Cancel','fr':'Annuler','de':'Abbrechen'}.get(lang,'Cancelar') }}
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ {'pt':'Salvar','en':'Save','fr':'Enregistrer','de':'Speichern'}.get(lang,'Salvar') }}
+          </button>
         </div>
-        <div class="fg"><label>Observações</label><textarea name="observacoes" id="g-obs" rows="2"></textarea></div>
-        <input type="hidden" name="gaiola_id" id="g-edit-id" value="">
-      </div>
-      <div class="modal-foot">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-gaiola')">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Salvar</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 
 <!-- Modal Mover Ave -->
-<div class="modal-bg" id="modal-mover">
-  <div class="modal-box" style="max-width:400px">
-    <div class="modal-head"><h4>Mover Ave de Gaiola</h4><button class="close-x" onclick="closeModal('modal-mover')">×</button></div>
-    <form method="POST" action="{{ url_for('mover_ave_gaiola') }}">
-      <div class="modal-body">
-        <div class="fg"><label>Ave</label><input type="text" id="mv-info" readonly style="background:#f3f4f6"></div>
-        <input type="hidden" name="ave_id" id="mv-aveid">
-        <div class="fg"><label>Nova Gaiola</label>
-          <select name="gaiola_id">
-            <option value="">-- Nenhuma --</option>
-            {% for g in gaiolas %}<option value="{{ g.id }}">{{ g.nome }}</option>{% endfor %}
-          </select>
+<div class="modal fade" id="modal-mover" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border-color);background:var(--bg-card);">
+        <h5 class="modal-title" style="color:var(--text-primary);font-size:1rem;font-weight:700;">
+          {{ {'pt':'Mover Ave','en':'Move Bird','fr':'Déplacer Oiseau','de':'Vogel Verschieben'}.get(lang,'Mover Ave') }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="{{ url_for('mover_ave_gaiola') }}">
+        <div class="modal-body" style="background:var(--bg-card);">
+          <div class="mb-3">
+            <label class="form-label">{{ {'pt':'Ave','en':'Bird','fr':'Oiseau','de':'Vogel'}.get(lang,'Ave') }}</label>
+            <input type="text" class="form-control" id="mv-info" readonly>
+          </div>
+          <input type="hidden" name="ave_id" id="mv-aveid">
+          <div class="mb-2">
+            <label class="form-label">{{ {'pt':'Nova Gaiola','en':'New Cage','fr':'Nouvelle Cage','de':'Neuer Käfig'}.get(lang,'Nova Gaiola') }}</label>
+            <select class="form-select" name="gaiola_id">
+              <option value="">-- {{ {'pt':'Nenhuma','en':'None','fr':'Aucune','de':'Keine'}.get(lang,'Nenhuma') }} --</option>
+              {% for g in gaiolas %}
+              <option value="{{ g.id }}">{{ g.nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-      </div>
-      <div class="modal-foot">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-mover')">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Mover</button>
-      </div>
-    </form>
+        <div class="modal-footer" style="border-top:1px solid var(--border-color);background:var(--bg-card);">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            {{ {'pt':'Cancelar','en':'Cancel','fr':'Annuler','de':'Abbrechen'}.get(lang,'Cancelar') }}
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ {'pt':'Mover','en':'Move','fr':'Déplacer','de':'Verschieben'}.get(lang,'Mover') }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
-<div style="display:flex;justify-content:flex-end;margin-bottom:16px">
-  <button class="btn btn-primary btn-sm" onclick="openModal('modal-gaiola')">+ Nova Gaiola</button>
+<!-- Topo -->
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+  <button class="btn btn-primary" onclick="resetGaiolaModal()" data-bs-toggle="modal" data-bs-target="#modal-gaiola">
+    <i class="bi bi-plus-circle"></i>
+    {{ {'pt':'Nova Gaiola','en':'New Cage','fr':'Nouvelle Cage','de':'Neuer Käfig'}.get(lang,'Nova Gaiola') }}
+  </button>
 </div>
 
 {% if not gaiolas %}
-<div class="card" style="text-align:center;padding:40px;color:var(--muted)">
-  <p style="font-size:2rem">🏠</p>
-  <p style="margin-top:8px">Nenhuma gaiola cadastrada ainda.</p>
+<div class="card" style="padding:50px;text-align:center;">
+  <div style="font-size:3rem;margin-bottom:12px;">🏠</div>
+  <div style="color:var(--text-muted);font-size:0.875rem;">
+    {{ {'pt':'Nenhuma gaiola cadastrada ainda.','en':'No cages registered yet.','fr':'Aucune cage enregistrée.','de':'Noch keine Käfige registriert.'}.get(lang,'Nenhuma gaiola cadastrada ainda.') }}
+  </div>
 </div>
 {% endif %}
 
-<div class="cage-grid">
+<div class="row g-3 mb-4">
   {% for g in gaiolas %}
-  <div class="cage-card">
-    <div class="cage-top">
-      <div>
-        <div class="cage-name">{{ g.nome }}</div>
-        <div style="font-size:.75rem;color:var(--muted)">{{ g.tipo }} • Cap: {{ g.capacidade }}</div>
-        {% if g.localizacao %}<div style="font-size:.72rem;color:var(--muted)">📍 {{ g.localizacao }}</div>{% endif %}
+  {% set aves_ativas = g.aves|selectattr('status','eq','Ativo')|list %}
+  <div class="col-sm-6 col-lg-4">
+    <div class="card h-100" style="background:var(--bg-card);">
+
+      <!-- Header do card -->
+      <div style="padding:16px 18px;border-bottom:1px solid var(--border-color);display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div>
+          <div style="font-weight:700;color:var(--text-primary);font-size:0.95rem;">{{ g.nome }}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">
+            <span style="background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:20px;font-weight:600;">{{ g.tipo }}</span>
+            <span style="margin-left:6px;">Cap: {{ g.capacidade }}</span>
+          </div>
+          {% if g.localizacao %}
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+            <i class="bi bi-geo-alt"></i> {{ g.localizacao }}
+          </div>
+          {% endif %}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="btn btn-sm btn-outline-secondary"
+                  onclick="editGaiola('{{ g.id }}','{{ g.nome }}','{{ g.tipo }}','{{ g.capacidade }}','{{ g.localizacao or '' }}','{{ (g.observacoes or '')|replace("'","") }}')"
+                  title="Editar">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <form method="POST" action="{{ url_for('deletar_gaiola', id=g.id) }}" style="display:inline;"
+                onsubmit="return confirm('Deletar {{ g.nome }}?')">
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="Deletar">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </div>
       </div>
-      <div style="display:flex;gap:4px">
-        <button class="btn btn-outline btn-sm" onclick="editGaiola('{{ g.id }}','{{ g.nome }}','{{ g.tipo }}','{{ g.capacidade }}','{{ g.localizacao or '' }}','{{ g.observacoes or '' }}')">✏️</button>
-        <form method="POST" action="{{ url_for('deletar_gaiola', id=g.id) }}" style="display:inline" onsubmit="return confirm('Deletar gaiola {{ g.nome }}?')">
-          <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
-        </form>
+
+      <!-- Body do card -->
+      <div style="padding:14px 18px;">
+        <!-- Barra de ocupação -->
+        {% set ocupacao = ((aves_ativas|length) / g.capacidade * 100)|int if g.capacidade > 0 else 0 %}
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:0.75rem;color:var(--text-muted);">
+              {{ {'pt':'Ocupação','en':'Occupancy','fr':'Occupation','de':'Belegung'}.get(lang,'Ocupação') }}
+            </span>
+            <span style="font-size:0.75rem;font-weight:700;color:{% if ocupacao >= 100 %}var(--danger){% elif ocupacao >= 75 %}var(--warning){% else %}var(--success){% endif %};">
+              {{ aves_ativas|length }}/{{ g.capacidade }}
+            </span>
+          </div>
+          <div style="height:5px;background:var(--bg-secondary);border-radius:10px;overflow:hidden;">
+            <div style="height:100%;width:{{ [ocupacao,100]|min }}%;background:{% if ocupacao >= 100 %}var(--danger){% elif ocupacao >= 75 %}var(--warning){% else %}var(--accent){% endif %};border-radius:10px;transition:width 0.3s;"></div>
+          </div>
+        </div>
+
+        <!-- Aves -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          {% for a in aves_ativas %}
+          <span onclick="openMover('{{ a.id }}','{{ a.anilha }} – {{ a.especie }}')"
+                style="display:inline-flex;align-items:center;gap:5px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:20px;padding:4px 10px;font-size:0.78rem;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-primary)'"
+                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-secondary)'">
+            <span style="width:9px;height:9px;border-radius:50%;background:{{ a.cor_anilha or '#52b788' }};display:inline-block;flex-shrink:0;"></span>
+            {{ a.anilha }}
+            <span style="font-size:0.68rem;color:var(--text-muted);">{{ a.especie }}</span>
+          </span>
+          {% else %}
+          <span style="font-size:0.78rem;color:var(--text-muted);font-style:italic;">
+            {{ {'pt':'Nenhuma ave','en':'No birds','fr':'Aucun oiseau','de':'Keine Vögel'}.get(lang,'Nenhuma ave') }}
+          </span>
+          {% endfor %}
+        </div>
+
+        {% if g.observacoes %}
+        <div style="margin-top:10px;padding:8px 10px;background:var(--bg-secondary);border-radius:6px;font-size:0.75rem;color:var(--text-muted);border-left:2px solid var(--border-color);">
+          {{ g.observacoes }}
+        </div>
+        {% endif %}
       </div>
-    </div>
-    <div style="font-size:.78rem;color:var(--muted);margin-bottom:6px">
-      {{ g.aves|selectattr('status','eq','Ativo')|list|length }} ave(s) ativa(s) / {{ g.capacidade }} vagas
-    </div>
-    <div class="cage-birds">
-      {% for a in g.aves if a.status == 'Ativo' %}
-      <span class="bird-tag" onclick="openMover('{{ a.id }}','{{ a.anilha }} - {{ a.especie }}')">
-        <span class="swatch" style="background:{{ a.cor_anilha or '#ccc' }}"></span>{{ a.anilha }}
-      </span>
-      {% else %}
-      <span style="font-size:.78rem;color:var(--muted)">Nenhuma ave</span>
-      {% endfor %}
+
     </div>
   </div>
   {% endfor %}
 </div>
 
 {% if aves_sem_gaiola %}
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><span class="card-title">Aves sem gaiola</span></div>
-  <div style="display:flex;flex-wrap:wrap;gap:8px">
+<div class="card" style="background:var(--bg-card);">
+  <div class="card-header">
+    <i class="bi bi-exclamation-circle" style="color:var(--warning);"></i>
+    {{ {'pt':'Aves sem gaiola','en':'Birds without cage','fr':'Oiseaux sans cage','de':'Vögel ohne Käfig'}.get(lang,'Aves sem gaiola') }}
+    <span style="margin-left:auto;background:var(--warning-soft);color:var(--warning);font-size:0.72rem;padding:2px 8px;border-radius:20px;font-weight:700;">
+      {{ aves_sem_gaiola|length }}
+    </span>
+  </div>
+  <div class="card-body" style="display:flex;flex-wrap:wrap;gap:8px;">
     {% for a in aves_sem_gaiola %}
-    <span class="bird-tag" onclick="openMover('{{ a.id }}','{{ a.anilha }} - {{ a.especie }}')">
-      <span class="swatch" style="background:{{ a.cor_anilha or '#ccc' }}"></span>{{ a.anilha }} – {{ a.especie }}
+    <span onclick="openMover('{{ a.id }}','{{ a.anilha }} – {{ a.especie }}')"
+          style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:20px;padding:6px 12px;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;"
+          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-primary)'"
+          onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-secondary)'">
+      <span style="width:9px;height:9px;border-radius:50%;background:{{ a.cor_anilha or '#52b788' }};display:inline-block;"></span>
+      <strong style="color:var(--text-primary);">{{ a.anilha }}</strong>
+      <span style="font-size:0.75rem;color:var(--text-muted);">{{ a.especie }}</span>
     </span>
     {% endfor %}
   </div>
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-function openMover(aveid, info){
-  document.getElementById('mv-aveid').value = aveid;
-  document.getElementById('mv-info').value = info;
-  openModal('modal-mover');
+function resetGaiolaModal() {
+  document.getElementById('form-gaiola').action = "{{ url_for('nova_gaiola') }}";
+  document.getElementById('modal-g-title').textContent = "{{ {'pt':'Nova Gaiola','en':'New Cage','fr':'Nouvelle Cage','de':'Neuer Käfig'}.get(lang,'Nova Gaiola') }}";
+  document.getElementById('g-nome').value = '';
+  document.getElementById('g-tipo').value = 'Reprodução';
+  document.getElementById('g-cap').value = '2';
+  document.getElementById('g-local').value = '';
+  document.getElementById('g-obs').value = '';
+  document.getElementById('g-edit-id').value = '';
 }
-function editGaiola(id, nome, tipo, cap, local, obs){
+
+function editGaiola(id, nome, tipo, cap, local, obs) {
   document.getElementById('form-gaiola').action = '/gaiola/editar/' + id;
-  document.getElementById('modal-g-title').textContent = 'Editar Gaiola';
+  document.getElementById('modal-g-title').textContent = "{{ {'pt':'Editar Gaiola','en':'Edit Cage','fr':'Modifier Cage','de':'Käfig Bearbeiten'}.get(lang,'Editar Gaiola') }}";
   document.getElementById('g-nome').value = nome;
   document.getElementById('g-tipo').value = tipo;
   document.getElementById('g-cap').value = cap;
   document.getElementById('g-local').value = local;
   document.getElementById('g-obs').value = obs;
-  openModal('modal-gaiola');
+  document.getElementById('g-edit-id').value = id;
+  new bootstrap.Modal(document.getElementById('modal-gaiola')).show();
+}
+
+function openMover(aveid, info) {
+  document.getElementById('mv-aveid').value = aveid;
+  document.getElementById('mv-info').value = info;
+  new bootstrap.Modal(document.getElementById('modal-mover')).show();
 }
 </script>
 {% endblock %}

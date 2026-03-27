@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}{{ {'pt':'Calculadora de Dieta','en':'Diet Calculator','fr':'Calculateur de Régime','de':'Diätrechner'}.get(lang,'Calculadora de Dieta') }}{% endblock %}
+{% block page_icon %}calculator{% endblock %}
+{% block page_title %}{{ {'pt':'Calculadora de Dieta','en':'Diet Calculator','fr':'Calculateur de Régime','de':'Diätrechner'}.get(lang,'Calculadora de Dieta') }}{% endblock %}
+
+{% block content %}
+
+<div class="card" style="padding:20px;background:var(--bg-card);">
+  <div style="font-weight:700;color:var(--text-primary);font-size:1.1rem;margin-bottom:15px;">
+    {{ {'pt':'Cálculo de Consumo de Ração','en':'Feed Consumption Calculation','fr':'Calcul Consommation Alimentaire','de':'Futterverbrauchsberechnung'}.get(lang,'Cálculo de Consumo de Ração') }}
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <label class="form-label">{{ {'pt':'Espécie da Ave','en':'Bird Species','fr':'Espèce d\'Oiseau','de':'Vogelart'}.get(lang,'Espécie da Ave') }}</label>
+      <select class="form-select" id="especie-select">
+        <option value="">-- {{ {'pt':'Selecione uma espécie','en':'Select a species','fr':'Sélectionner une espèce','de':'Art auswählen'}.get(lang,'Selecione uma espécie') }} --</option>
+        {% for especie in especies %}
+        <option value="{{ especie }}">{{ especie }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">{{ {'pt':'Quantidade de Aves','en':'Number of Birds','fr':'Nombre d\'Oiseaux','de':'Anzahl der Vögel'}.get(lang,'Quantidade de Aves') }}</label>
+      <input type="number" class="form-control" id="quantidade-aves" value="1" min="1">
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <label class="form-label">{{ {'pt':'Consumo Diário por Ave (gramas)','en':'Daily Consumption per Bird (grams)','fr':'Consommation Quotidienne par Oiseau (grammes)','de':'Täglicher Verbrauch pro Vogel (Gramm)'}.get(lang,'Consumo Diário por Ave (gramas)') }}</label>
+      <input type="number" class="form-control" id="consumo-diario" placeholder="Ex: 15" min="0" step="0.1">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">{{ {'pt':'Preço do Kg da Ração (R$)','en':'Feed Price per Kg (R$)','fr':'Prix du Kg de Nourriture (R$)','de':'Futterpreis pro Kg (R$)'}.get(lang,'Preço do Kg da Ração (R$)') }}</label>
+      <div class="input-group">
+        <span class="input-group-text">R$</span>
+        <input type="number" class="form-control" id="preco-kg" placeholder="Ex: 12.50" min="0" step="0.01">
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <button class="btn btn-primary" id="calcular-btn">
+      <i class="bi bi-calculator"></i>
+      {{ {'pt':'Calcular','en':'Calculate','fr':'Calculer','de':'Berechnen'}.get(lang,'Calcular') }}
+    </button>
+    <button class="btn btn-outline-secondary" id="limpar-calc-btn">
+      <i class="bi bi-x-circle"></i>
+      {{ {'pt':'Limpar','en':'Clear','fr':'Effacer','de':'Löschen'}.get(lang,'Limpar') }}
+    </button>
+  </div>
+
+  <div id="resultado-calculadora" style="margin-top:30px;padding-top:20px;border-top:1px solid var(--border-color);">
+    <div style="text-align:center;color:var(--text-muted);font-style:italic;">
+      {{ {'pt':'Preencha os campos acima para calcular.','en':'Fill in the fields above to calculate.','fr':'Remplissez les champs ci-dessus pour calculer.','de':'Füllen Sie die Felder oben aus, um zu berechnen.'}.get(lang,'Preencha os campos acima para calcular.') }}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const especieSelect = document.getElementById('especie-select');
+  const quantidadeAvesInput = document.getElementById('quantidade-aves');
+  const consumoDiarioInput = document.getElementById('consumo-diario');
+  const precoKgInput = document.getElementById('preco-kg');
+  const calcularBtn = document.getElementById('calcular-btn');
+  const limparCalcBtn = document.getElementById('limpar-calc-btn');
+  const resultadoCalcDiv = document.getElementById('resultado-calculadora');
+
+  // Valores de consumo diário por espécie (exemplo, ajuste conforme necessário)
+  const consumoPorEspecie = {
+    "Calopsita": 15,
+    "Periquito": 10,
+    "Agapornis": 18,
+    "Ring Neck": 25,
+    "Arara": 100,
+    // Adicione mais espécies e seus consumos aqui
+  };
+
+  especieSelect.addEventListener('change', () => {
+    const selectedEspecie = especieSelect.value;
+    if (consumoPorEspecie[selectedEspecie]) {
+      consumoDiarioInput.value = consumoPorEspecie[selectedEspecie];
+    } else {
+      consumoDiarioInput.value = ''; // Limpa se a espécie não tiver um valor predefinido
+    }
+  });
+
+  calcularBtn.addEventListener('click', () => {
+    const quantidadeAves = parseFloat(quantidadeAvesInput.value);
+    const consumoDiario = parseFloat(consumoDiarioInput.value);
+    const precoKg = parseFloat(precoKgInput.value);
+
+    if (isNaN(quantidadeAves) || isNaN(consumoDiario) || isNaN(precoKg) || quantidadeAves <= 0 || consumoDiario <= 0 || precoKg <= 0) {
+      resultadoCalcDiv.innerHTML = `
+        <div style="color:var(--danger);text-align:center;font-weight:600;">
+          {{ {'pt':'Por favor, preencha todos os campos com valores válidos.','en':'Please fill in all fields with valid values.','fr':'Veuillez remplir tous les champs avec des valeurs valides.','de':'Bitte füllen Sie alle Felder mit gültigen Werten aus.'}.get(lang,'Por favor, preencha todos os campos com valores válidos.') }}
+        </div>
+      `;
+      return;
+    }
+
+    const consumoTotalDiarioG = quantidadeAves * consumoDiario;
+    const consumoTotalDiarioKg = consumoTotalDiarioG / 1000;
+    const custoDiario = consumoTotalDiarioKg * precoKg;
+
+    const consumoTotalMensalKg = consumoTotalDiarioKg * 30;
+    const custoMensal = custoDiario * 30;
+
+    const consumoTotalAnualKg = consumoTotalDiarioKg * 365;
+    const custoAnual = custoDiario * 365;
+
+    resultadoCalcDiv.innerHTML = `
+      <h5 style="color:var(--text-primary);font-size:1.1rem;font-weight:700;text-align:center;margin-bottom:20px;">
+        {{ {'pt':'Resultados do Cálculo','en':'Calculation Results','fr':'Résultats du Calcul','de':'Berechnungsergebnisse'}.get(lang,'Resultados do Cálculo') }}
+      </h5>
+      <div style="background:var(--bg-secondary);padding:20px;border-radius:10px;">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px;">
+              {{ {'pt':'Consumo Diário Total','en':'Total Daily Consumption','fr':'Consommation Quotidienne Totale','de':'Gesamter täglicher Verbrauch'}.get(lang,'Consumo Diário Total') }}
+            </div>
+            <div style="font-weight:700;color:var(--text-primary);font-size:1rem;">${consumoTotalDiarioG.toFixed(2)}g (ou ${consumoTotalDiarioKg.toFixed(2)}kg)</div>
+          </div>
+          <div class="col-md-6">
+            <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px;">
+              {{ {'pt':'Custo Diário Total','en':'Total Daily Cost','fr':'Coût Quotidien Total','de':'Gesamte täglische Kosten'}.get(lang,'Custo Diário Total') }}
+            </div>
+            <div style="font-weight:700;color:var(--accent);font-size:1rem;">R$ ${custoDiario.toFixed(2)}</div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px;">
+              {{ {'pt':'Consumo Mensal Total','en':'Total Monthly Consumption','fr':'Consommation Mensuelle Totale','de':'Gesamter monatlicher Verbrauch'}.get(lang,'Consumo Mensal Total') }}
+            </div>
+            <div style="font-weight:700;color:var(--text-primary);font-size:1rem;">${consumoTotalMensalKg.toFixed(2)}kg</div>
+          </div>
+          <div class="col-md-6">
+            <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px;">
+              {{ {'pt':'Custo Mensal Total','en':'Total Monthly Cost','fr':'Coût Mensuel Total','de':'Gesamte monatliche Kosten'}.get(lang,'Custo Mensal Total') }}
+            </div>
+            <div style="font-weight:700;color:var(--accent);font-size:1rem;">R$ ${custoMensal.toFixed(2)}</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px;">
+              {{ {'pt':'Consumo Anual Total','en':'Total Annual Consumption','fr':'Consommation Annuelle Totale','de':'Gesamter jährlicher Verbrauch'}.get(lang,'Consumo Anual Total') }}
+            </div>
+            <div style="font-weight:700;color:var(--text-primary);font-size:1rem;">${consumoTotalAnualKg.toFixed(2)}kg</div>
+          </div>
+          <div class="col-md-6">
+            <div style="color:var(--text-muted);font-size:0.75rem;margin-bottom:4px;">
+              {{ {'pt':'Custo Anual Total','en':'Total Annual Cost','fr':'Coût Annuel Total','de':'Gesamte jährliche Kosten'}.get(lang,'Custo Anual Total') }}
+            </div>
+            <div style="font-weight:700;color:var(--accent);font-size:1rem;">R$ ${custoAnual.toFixed(2)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  limparCalcBtn.addEventListener('click', () => {
+    especieSelect.value = '';
+    quantidadeAvesInput.value = '1';
+    consumoDiarioInput.value = '';
+    precoKgInput.value = '';
+    resultadoCalcDiv.innerHTML = `
+      <div style="text-align:center;color:var(--text-muted);font-style:italic;">
+        {{ {'pt':'Preencha os campos acima para calcular.','en':'Fill in the fields above to calculate.','fr':'Remplissez les champs ci-dessus pour calculer.','de':'Füllen Sie die Felder oben aus, um zu berechnen.'}.get(lang,'Preencha os campos acima para calcular.') }}
+      </div>
+    `;
+  });
+</script>
+{% endblock %}

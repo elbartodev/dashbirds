@@ -1,71 +1,150 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
-{% block page_title %}Visão Geral{% endblock %}
+{% block page_icon %}speedometer2{% endblock %}
+{% block page_title %}
+{{ {'pt':'Visão Geral','en':'Overview','fr':'Vue Générale','de':'Übersicht'}.get(lang,'Visão Geral') }}
+{% endblock %}
+
 {% block content %}
-<div class="metrics">
-  <div class="metric m-green">
-    <div class="lbl">Aves Ativas</div>
-    <div class="val">{{ total_aves }}</div>
-    <div class="sub">{{ machos }} machos / {{ femeas }} fêmeas</div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="card h-100" style="border-left:3px solid var(--success);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Aves Ativas','en':'Active Birds','fr':'Oiseaux Actifs','de':'Aktive Vögel'}.get(lang,'Aves Ativas') }}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--text-primary);line-height:1;">{{ total_aves }}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">{{ machos }}♂ / {{ femeas }}♀</div>
+      </div>
+    </div>
   </div>
-  <div class="metric m-blue">
-    <div class="lbl">Posturas Ativas</div>
-    <div class="val">{{ posturas_ativas }}</div>
-    <div class="sub">Total geral de posturas</div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="card h-100" style="border-left:3px solid var(--info);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Posturas Ativas','en':'Active Clutches','fr':'Pontes Actives','de':'Aktive Gelege'}.get(lang,'Posturas Ativas') }}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--text-primary);line-height:1;">{{ posturas_ativas }}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+          {{ {'pt':'em andamento','en':'in progress','fr':'en cours','de':'laufend'}.get(lang,'em andamento') }}
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="metric m-orange">
-    <div class="lbl">No Berçário</div>
-    <div class="val">{{ filhotes_ativos }}</div>
-    <div class="sub">Filhotes ativos</div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="card h-100" style="border-left:3px solid var(--warning);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Berçário','en':'Nursery','fr':'Pouponnière','de':'Aufzucht'}.get(lang,'Berçário') }}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--text-primary);line-height:1;">{{ filhotes_ativos }}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+          {{ {'pt':'filhotes ativos','en':'active chicks','fr':'poussins actifs','de':'aktive Küken'}.get(lang,'filhotes ativos') }}
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="metric m-red">
-    <div class="lbl">Aves Vendidas</div>
-    <div class="val">{{ aves_vendidas }}</div>
-    <div class="sub">R$ {{ "%.2f"|format(receita_total) }} arrecadado</div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="card h-100" style="border-left:3px solid var(--danger);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Aves Vendidas','en':'Birds Sold','fr':'Oiseaux Vendus','de':'Verkaufte Vögel'}.get(lang,'Aves Vendidas') }}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--text-primary);line-height:1;">{{ aves_vendidas }}</div>
+        <div style="font-size:0.75rem;color:var(--success);margin-top:4px;">R$ {{ "%.2f"|format(receita_total) }}</div>
+      </div>
+    </div>
   </div>
-  <div class="metric m-green">
-    <div class="lbl">Gaiolas</div>
-    <div class="val">{{ gaiolas }}</div>
-    <div class="sub">Cadastradas</div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="card h-100" style="border-left:3px solid var(--success);">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Gaiolas','en':'Cages','fr':'Cages','de':'Käfige'}.get(lang,'Gaiolas') }}
+        </div>
+        <div style="font-size:1.8rem;font-weight:800;color:var(--text-primary);line-height:1;">{{ gaiolas }}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+          {{ {'pt':'cadastradas','en':'registered','fr':'enregistrées','de':'registriert'}.get(lang,'cadastradas') }}
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="metric m-purple">
-    <div class="lbl">Valor Est. Plantel</div>
-    <div class="val" style="font-size:1.1rem">R$ {{ "%.2f"|format(valor_plantel) }}</div>
-    <div class="sub">Aves ativas</div>
+  <div class="col-6 col-md-4 col-lg-2">
+    <div class="card h-100" style="border-left:3px solid #a855f7;">
+      <div class="card-body" style="padding:16px;">
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+          {{ {'pt':'Valor Plantel','en':'Flock Value','fr':'Valeur Cheptel','de':'Bestandswert'}.get(lang,'Valor Plantel') }}
+        </div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--text-primary);line-height:1.2;">R$ {{ "%.2f"|format(valor_plantel) }}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+          {{ {'pt':'estimado','en':'estimated','fr':'estimé','de':'geschätzt'}.get(lang,'estimado') }}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-  <div class="card">
-    <div class="card-header"><span class="card-title">Distribuição por Espécie</span></div>
-    {% if especies %}
-      {% for esp, qtd in especies.items() %}
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
-        <span style="font-size:.85rem">{{ esp }}</span>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="background:var(--primary-light);height:8px;width:{{ (qtd / total_ativas * 100)|int }}px;border-radius:4px;max-width:100px"></div>
-          <strong>{{ qtd }}</strong>
-        </div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="bi bi-pie-chart"></i>
+        {{ {'pt':'Distribuição por Espécie','en':'Distribution by Species','fr':'Répartition par Espèce','de':'Verteilung nach Art'}.get(lang,'Distribuição por Espécie') }}
       </div>
-      {% endfor %}
-    {% else %}
-      <p style="color:var(--muted);font-size:.85rem;text-align:center;padding:20px 0">Nenhuma ave cadastrada.</p>
-    {% endif %}
+      <div class="card-body">
+        {% if especies %}
+          {% for esp, qtd in especies.items() %}
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
+            <span style="font-size:0.875rem;color:var(--text-secondary);">{{ esp }}</span>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="background:var(--bg-hover);height:6px;border-radius:3px;width:80px;overflow:hidden;">
+                <div style="background:var(--accent);height:6px;border-radius:3px;width:{{ (qtd / total_ativas * 100)|int if total_ativas > 0 else 0 }}%;"></div>
+              </div>
+              <strong style="font-size:0.875rem;color:var(--text-primary);min-width:20px;text-align:right;">{{ qtd }}</strong>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:0.875rem;">
+            {{ {'pt':'Nenhuma ave cadastrada.','en':'No birds registered.','fr':'Aucun oiseau enregistré.','de':'Keine Vögel registriert.'}.get(lang,'Nenhuma ave cadastrada.') }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="card-header"><span class="card-title">Últimas Posturas</span></div>
-    {% if posturas_recentes %}
-      {% for p in posturas_recentes %}
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.83rem">
-        <span>{{ p.femea.anilha if p.femea else '?' }} × {{ p.macho.anilha if p.macho else '?' }}</span>
-        <span>{{ p.total_ovos }} ovos / {{ p.ovos_fecundados }} fec.</span>
-        <span class="badge b-blue">{{ p.status }}</span>
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="bi bi-egg"></i>
+        {{ {'pt':'Últimas Posturas','en':'Latest Clutches','fr':'Dernières Pontes','de':'Letzte Gelege'}.get(lang,'Últimas Posturas') }}
       </div>
-      {% endfor %}
-    {% else %}
-      <p style="color:var(--muted);font-size:.85rem;text-align:center;padding:20px 0">Nenhuma postura registrada.</p>
-    {% endif %}
+      <div class="card-body">
+        {% if posturas_recentes %}
+          {% for p in posturas_recentes %}
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-color);gap:8px;flex-wrap:wrap;">
+            <span style="font-size:0.875rem;color:var(--text-secondary);">
+              {{ p.femea.anilha if p.femea else '?' }} × {{ p.macho.anilha if p.macho else '?' }}
+            </span>
+            <span style="font-size:0.8rem;color:var(--text-muted);">
+              {{ p.total_ovos }} {{ {'pt':'ovos','en':'eggs','fr':'œufs','de':'Eier'}.get(lang,'ovos') }} / {{ p.ovos_fecundados }} {{ {'pt':'fec.','en':'fert.','fr':'féc.','de':'bef.'}.get(lang,'fec.') }}
+            </span>
+            <span class="badge" style="
+              {% if p.status == 'Encerrada' %}background:var(--bg-hover);color:var(--text-muted);
+              {% elif p.status == 'Eclosão' %}background:var(--success-soft);color:var(--success);
+              {% elif p.status == 'Incubação' %}background:var(--warning-soft);color:var(--warning);
+              {% else %}background:var(--info-soft);color:var(--info);{% endif %}
+              font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;">
+              {{ p.status }}
+            </span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:0.875rem;">
+            {{ {'pt':'Nenhuma postura registrada.','en':'No clutches registered.','fr':'Aucune ponte enregistrée.','de':'Keine Gelege registriert.'}.get(lang,'Nenhuma postura registrada.') }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

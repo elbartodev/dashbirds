@@ -1,149 +1,270 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="{{ lang or 'pt' }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DashBirds – Login</title>
+<title>DashBirds – {{ {'pt':'Entrar','en':'Login','fr':'Connexion','de':'Anmelden'}.get(lang,'Entrar') }}</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #1b4332, #2d6a4f);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.box {
-  background: #fff;
-  border-radius: 16px;
-  padding: 36px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.3);
-}
-.logo {
-  text-align: center;
-  margin-bottom: 28px;
-}
-.logo h1 {
-  font-size: 2rem;
-  color: #2d6a4f;
-  font-weight: 800;
-}
-.logo p {
-  color: #6c757d;
-  font-size: .85rem;
-  margin-top: 6px;
-}
-.tabs {
-  display: flex;
-  border-bottom: 2px solid #dee2e6;
-  margin-bottom: 24px;
-}
-.tab {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  font-weight: 600;
-  color: #6c757d;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  text-decoration: none;
-  font-size: .9rem;
-  transition: .2s;
-}
-.tab.active {
-  color: #2d6a4f;
-  border-color: #2d6a4f;
-}
-.fg {
-  margin-bottom: 16px;
-}
-.fg label {
-  display: block;
-  font-size: .82rem;
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #212529;
-}
-.fg input {
-  display: block;
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  font-size: .9rem;
-  font-family: inherit;
-  color: #212529;
-  background: #fff;
-  transition: border-color .2s;
-}
-.fg input:focus {
-  outline: none;
-  border-color: #2d6a4f;
-  box-shadow: 0 0 0 3px rgba(45,106,79,.12);
-}
-.btn-submit {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  background: #2d6a4f;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: .95rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: background .2s;
-}
-.btn-submit:hover {
-  background: #1b4332;
-}
-.alert {
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: .85rem;
-  margin-bottom: 14px;
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f2d1a 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .box {
+    background: #1a2332;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  }
+
+  .logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .logo-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 2rem;
+    box-shadow: 0 8px 24px rgba(34,197,94,0.3);
+  }
+
+  .logo h1 {
+    font-size: 1.6rem;
+    color: #f1f5f9;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .logo p {
+    color: #64748b;
+    font-size: 0.82rem;
+    margin-top: 6px;
+  }
+
+  .tabs {
+    display: flex;
+    background: #0f172a;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 28px;
+    gap: 4px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 9px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: #1e293b;
+    color: #22c55e;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .tab:not(.active):hover {
+    color: #94a3b8;
+  }
+
+  .fg {
+    margin-bottom: 18px;
+  }
+
+  .fg label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .fg input {
+    display: block;
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 9px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #f1f5f9;
+    background: #0f172a;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .fg input:focus {
+    outline: none;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+  }
+
+  .fg input::placeholder {
+    color: #334155;
+  }
+
+  .btn-submit {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-submit:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
+  .alert {
+    padding: 11px 14px;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    background: rgba(239,68,68,0.12);
+    color: #f87171;
+    border: 1px solid rgba(239,68,68,0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.82rem;
+    color: #475569;
+  }
+
+  .footer-link a {
+    color: #22c55e;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .footer-link a:hover {
+    text-decoration: underline;
+  }
+
+  .lang-bar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 24px;
+  }
+
+  .lang-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: #475569;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .lang-btn:hover,
+  .lang-btn.active {
+    border-color: #22c55e;
+    color: #22c55e;
+  }
 </style>
 </head>
 <body>
+
 <div class="box">
+
   <div class="logo">
-    <h1>🐦 DashBirds</h1>
-    <p>Sistema de Gestão para Criadores de Aves</p>
+    <div class="logo-icon">🐦</div>
+    <h1>DashBirds</h1>
+    <p>{{ {'pt':'Sistema de Gestão para Criadores de Aves','en':'Bird Breeder Management System','fr':'Système de Gestion pour Éleveurs d\'Oiseaux','de':'Verwaltungssystem für Vogelzüchter'}.get(lang,'Sistema de Gestão para Criadores de Aves') }}</p>
   </div>
 
   <div class="tabs">
-    <a class="tab active" href="/login">Entrar</a>
-    <a class="tab" href="/cadastro">Cadastrar</a>
+    <a class="tab active" href="/login">
+      {{ {'pt':'Entrar','en':'Login','fr':'Connexion','de':'Anmelden'}.get(lang,'Entrar') }}
+    </a>
+    <a class="tab" href="/cadastro">
+      {{ {'pt':'Cadastrar','en':'Register','fr':'S\'inscrire','de':'Registrieren'}.get(lang,'Cadastrar') }}
+    </a>
   </div>
 
   {% if erro %}
-  <div class="alert">{{ erro }}</div>
+  <div class="alert">
+    <i class="bi bi-x-circle"></i> {{ erro }}
+  </div>
   {% endif %}
 
   <form method="POST" action="/login">
     <div class="fg">
       <label for="email">E-mail</label>
-      <input type="email" id="email" name="email" placeholder="seu@email.com" required autofocus>
+      <input type="email" id="email" name="email"
+             placeholder="{{ {'pt':'seu@email.com','en':'your@email.com','fr':'votre@email.com','de':'ihre@email.de'}.get(lang,'seu@email.com') }}"
+             required autofocus>
     </div>
     <div class="fg">
-      <label for="senha">Senha</label>
+      <label for="senha">
+        {{ {'pt':'Senha','en':'Password','fr':'Mot de Passe','de':'Passwort'}.get(lang,'Senha') }}
+      </label>
       <input type="password" id="senha" name="senha" placeholder="••••••••" required>
     </div>
-    <button type="submit" class="btn-submit">Entrar</button>
+    <button type="submit" class="btn-submit">
+      <i class="bi bi-box-arrow-in-right"></i>
+      {{ {'pt':'Entrar','en':'Sign In','fr':'Se Connecter','de':'Anmelden'}.get(lang,'Entrar') }}
+    </button>
   </form>
 
-  <p style="text-align:center;margin-top:18px;font-size:.85rem;color:#6c757d">
-    Não tem conta? <a href="/cadastro" style="color:#2d6a4f;font-weight:600">Cadastre-se</a>
+  <p class="footer-link">
+    {{ {'pt':'Não tem conta?','en':'No account?','fr':'Pas de compte?','de':'Kein Konto?'}.get(lang,'Não tem conta?') }}
+    <a href="/cadastro">{{ {'pt':'Cadastre-se','en':'Register','fr':'Inscrivez-vous','de':'Registrieren'}.get(lang,'Cadastre-se') }}</a>
   </p>
+
+  <div class="lang-bar">
+    <a href="/lang/pt" class="lang-btn {{ 'active' if lang == 'pt' }}">🇧🇷 PT</a>
+    <a href="/lang/en" class="lang-btn {{ 'active' if lang == 'en' }}">🇺🇸 EN</a>
+    <a href="/lang/fr" class="lang-btn {{ 'active' if lang == 'fr' }}">🇫🇷 FR</a>
+    <a href="/lang/de" class="lang-btn {{ 'active' if lang == 'de' }}">🇩🇪 DE</a>
+  </div>
+
 </div>
+
 </body>
 </html>

@@ -1,73 +1,145 @@
 {% extends "base.html" %}
-{% block title %}Plantel{% endblock %}
-{% block page_title %}Plantel (Aves){% endblock %}
-{% block content %}
-<form method="GET" class="search-row">
-  <input type="text" name="q" value="{{ q }}" placeholder="🔍 Buscar anilha, espécie, genética..." style="max-width:260px">
-  <select name="sexo">
-    <option value="">Todos os sexos</option>
-    <option {% if sexo=='Macho' %}selected{% endif %}>Macho</option>
-    <option {% if sexo=='Fêmea' %}selected{% endif %}>Fêmea</option>
-    <option {% if sexo=='Indeterminado' %}selected{% endif %}>Indeterminado</option>
-  </select>
-  <select name="status">
-    <option value="">Todos os status</option>
-    <option {% if status=='Ativo' %}selected{% endif %}>Ativo</option>
-    <option {% if status=='Vendido' %}selected{% endif %}>Vendido</option>
-    <option {% if status=='Falecido' %}selected{% endif %}>Falecido</option>
-  </select>
-  <button type="submit" class="btn btn-outline btn-sm">Filtrar</button>
-  <a href="{{ url_for('nova_ave') }}" class="btn btn-primary btn-sm">+ Nova Ave</a>
-</form>
+{% block title %}{{ {'pt':'Plantel','en':'Flock','fr':'Cheptel','de':'Bestand'}.get(lang,'Plantel') }}{% endblock %}
+{% block page_icon %}feather{% endblock %}
+{% block page_title %}{{ {'pt':'Plantel','en':'Flock','fr':'Cheptel','de':'Bestand'}.get(lang,'Plantel') }}{% endblock %}
 
-<div class="card" style="padding:0">
-  <div class="tbl-wrap">
-    <table>
+{% block content %}
+
+<!-- Filtros + Botão -->
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:20px;">
+  <form method="GET" style="display:flex;flex-wrap:wrap;gap:8px;flex:1;min-width:0;">
+    <input type="text" name="q" value="{{ q }}"
+           placeholder="{{ {'pt':'Buscar anilha, espécie...','en':'Search ring, species...','fr':'Chercher bague, espèce...','de':'Ring, Art suchen...'}.get(lang,'Buscar...') }}"
+           class="form-control" style="max-width:280px;">
+
+    <select name="sexo" class="form-select" style="max-width:160px;">
+      <option value="">{{ {'pt':'Todos os sexos','en':'All sexes','fr':'Tous les sexes','de':'Alle Geschlechter'}.get(lang,'Todos os sexos') }}</option>
+      <option value="Macho"       {{ 'selected' if sexo == 'Macho' }}>{{ {'pt':'Macho','en':'Male','fr':'Mâle','de':'Männchen'}.get(lang,'Macho') }}</option>
+      <option value="Fêmea"       {{ 'selected' if sexo == 'Fêmea' }}>{{ {'pt':'Fêmea','en':'Female','fr':'Femelle','de':'Weibchen'}.get(lang,'Fêmea') }}</option>
+      <option value="Indeterminado" {{ 'selected' if sexo == 'Indeterminado' }}>{{ {'pt':'Indeterminado','en':'Undetermined','fr':'Indéterminé','de':'Unbestimmt'}.get(lang,'Indeterminado') }}</option>
+    </select>
+
+    <select name="status" class="form-select" style="max-width:160px;">
+      <option value="">{{ {'pt':'Todos os status','en':'All statuses','fr':'Tous les statuts','de':'Alle Status'}.get(lang,'Todos os status') }}</option>
+      <option value="Ativo"    {{ 'selected' if status == 'Ativo' }}>{{ {'pt':'Ativo','en':'Active','fr':'Actif','de':'Aktiv'}.get(lang,'Ativo') }}</option>
+      <option value="Vendido"  {{ 'selected' if status == 'Vendido' }}>{{ {'pt':'Vendido','en':'Sold','fr':'Vendu','de':'Verkauft'}.get(lang,'Vendido') }}</option>
+      <option value="Falecido" {{ 'selected' if status == 'Falecido' }}>{{ {'pt':'Falecido','en':'Deceased','fr':'Décédé','de':'Verstorben'}.get(lang,'Falecido') }}</option>
+    </select>
+
+    <button type="submit" class="btn btn-outline-secondary">
+      <i class="bi bi-search"></i>
+    </button>
+    {% if q or sexo or status %}
+    <a href="{{ url_for('plantel') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-x"></i>
+    </a>
+    {% endif %}
+  </form>
+
+  <a href="{{ url_for('nova_ave') }}" class="btn btn-primary" style="flex-shrink:0;">
+    <i class="bi bi-plus-circle"></i>
+    {{ {'pt':'Nova Ave','en':'New Bird','fr':'Nouvel Oiseau','de':'Neuer Vogel'}.get(lang,'Nova Ave') }}
+  </a>
+</div>
+
+<!-- Tabela -->
+<div class="card" style="padding:0;background:var(--bg-card);">
+  <div style="overflow-x:auto;">
+    <table class="table table-hover mb-0" style="min-width:780px;">
       <thead>
         <tr>
-          <th>Anilha</th><th>Cor</th><th>Espécie</th><th>Sexo</th>
-          <th>Genética</th><th>Gaiola</th><th>Vl. Venda</th>
-          <th>Custo Méd.</th><th>Status</th><th>Ações</th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);white-space:nowrap;">
+            {{ {'pt':'Anilha','en':'Ring','fr':'Bague','de':'Ring'}.get(lang,'Anilha') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);">
+            {{ {'pt':'Espécie','en':'Species','fr':'Espèce','de':'Art'}.get(lang,'Espécie') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);">
+            {{ {'pt':'Sexo','en':'Sex','fr':'Sexe','de':'Geschlecht'}.get(lang,'Sexo') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);">
+            {{ {'pt':'Genética','en':'Genetics','fr':'Génétique','de':'Genetik'}.get(lang,'Genética') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);">
+            {{ {'pt':'Gaiola','en':'Cage','fr':'Cage','de':'Käfig'}.get(lang,'Gaiola') }}
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);">
+            Status
+          </th>
+          <th style="background:var(--bg-secondary);color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;padding:11px 16px;border-bottom:1px solid var(--border-color);">
+            {{ {'pt':'Ações','en':'Actions','fr':'Actions','de':'Aktionen'}.get(lang,'Ações') }}
+          </th>
         </tr>
       </thead>
       <tbody>
         {% for a in aves %}
-        <tr>
-          <td><strong>{{ a.anilha }}</strong></td>
-          <td>
-            <span class="swatch" style="background:{{ a.cor_anilha or '#ccc' }}"></span>
-            {{ a.cor_plumagem or '-' }}
+        <tr style="background:var(--bg-card);">
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:11px;height:11px;border-radius:50%;background:{{ a.cor_anilha or '#52b788' }};display:inline-block;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,0.1);"></span>
+              <strong style="color:var(--text-primary);font-size:0.9rem;">{{ a.anilha }}</strong>
+            </div>
           </td>
-          <td>
-            {{ a.especie or '-' }}
-            {% if a.subespecie %}<br><small style="color:var(--muted)">{{ a.subespecie }}</small>{% endif %}
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            <div style="color:var(--text-primary);font-size:0.875rem;">{{ a.especie or '-' }}</div>
+            {% if a.subespecie %}
+            <div style="color:var(--text-muted);font-size:0.75rem;">{{ a.subespecie }}</div>
+            {% endif %}
           </td>
-          <td>
-            {% if a.sexo == 'Macho' %}<span class="badge b-blue">♂ Macho</span>
-            {% elif a.sexo == 'Fêmea' %}<span class="badge b-orange">♀ Fêmea</span>
-            {% else %}<span class="badge b-gray">? Indet.</span>{% endif %}
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            {% if a.sexo == 'Macho' %}
+              <span style="background:var(--info-soft);color:var(--info);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;">♂ {{ {'pt':'Macho','en':'Male','fr':'Mâle','de':'Männchen'}.get(lang,'Macho') }}</span>
+            {% elif a.sexo == 'Fêmea' %}
+              <span style="background:var(--warning-soft);color:var(--warning);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;">♀ {{ {'pt':'Fêmea','en':'Female','fr':'Femelle','de':'Weibchen'}.get(lang,'Fêmea') }}</span>
+            {% else %}
+              <span style="background:var(--bg-hover);color:var(--text-muted);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;">? {{ {'pt':'Indet.','en':'Undet.','fr':'Indét.','de':'Unbest.'}.get(lang,'Indet.') }}</span>
+            {% endif %}
           </td>
-          <td style="font-size:.78rem;color:var(--muted)">{{ a.genetica or '-' }}</td>
-          <td>{{ a.gaiola.nome if a.gaiola else '-' }}</td>
-          <td>{% if a.valor_venda %}R$ {{ "%.2f"|format(a.valor_venda) }}{% else %}-{% endif %}</td>
-          <td>R$ {{ "%.2f"|format(a.custo_total()) }}</td>
-          <td>
-            {% if a.status == 'Ativo' %}<span class="badge b-green">Ativo</span>
-            {% elif a.status == 'Vendido' %}<span class="badge b-red">Vendido</span>
-            {% else %}<span class="badge b-gray">{{ a.status }}</span>{% endif %}
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            <span style="color:var(--text-secondary);font-size:0.82rem;">{{ a.genetica or '-' }}</span>
           </td>
-          <td style="white-space:nowrap">
-            <a href="{{ url_for('editar_ave', id=a.id) }}" class="btn btn-outline btn-sm">✏️</a>
-            <form method="POST" action="{{ url_for('deletar_ave', id=a.id) }}" style="display:inline" onsubmit="return confirm('Deletar esta ave?')">
-              <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            {% if a.gaiola %}
+              <span style="color:var(--text-secondary);font-size:0.82rem;">{{ a.gaiola.nome }}</span>
+            {% else %}
+              <span style="color:var(--text-muted);font-size:0.78rem;font-style:italic;">{{ {'pt':'Sem gaiola','en':'No cage','fr':'Sans cage','de':'Kein Käfig'}.get(lang,'Sem gaiola') }}</span>
+            {% endif %}
+          </td>
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;">
+            {% if a.status == 'Ativo' %}
+              <span style="background:var(--success-soft);color:var(--success);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;">{{ {'pt':'Ativo','en':'Active','fr':'Actif','de':'Aktiv'}.get(lang,'Ativo') }}</span>
+            {% elif a.status == 'Vendido' %}
+              <span style="background:var(--info-soft);color:var(--info);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;">{{ {'pt':'Vendido','en':'Sold','fr':'Vendu','de':'Verkauft'}.get(lang,'Vendido') }}</span>
+            {% else %}
+              <span style="background:var(--danger-soft);color:var(--danger);font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:600;">{{ {'pt':'Falecido','en':'Deceased','fr':'Décédé','de':'Verstorben'}.get(lang,'Falecido') }}</span>
+            {% endif %}
+          </td>
+          <td style="padding:12px 16px;border-bottom:1px solid var(--border-color);vertical-align:middle;white-space:nowrap;">
+            <a href="{{ url_for('editar_ave', id=a.id) }}"
+               class="btn btn-sm btn-outline-secondary"
+               title="{{ {'pt':'Editar','en':'Edit','fr':'Modifier','de':'Bearbeiten'}.get(lang,'Editar') }}">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <form method="POST" action="{{ url_for('deletar_ave', id=a.id) }}" style="display:inline;"
+                  onsubmit="return confirm('{{ {'pt':'Deletar','en':'Delete','fr':'Supprimer','de':'Löschen'}.get(lang,'Deletar') }} {{ a.anilha }}?')">
+              <button type="submit" class="btn btn-sm btn-outline-danger"
+                      title="{{ {'pt':'Deletar','en':'Delete','fr':'Supprimer','de':'Löschen'}.get(lang,'Deletar') }}">
+                <i class="bi bi-trash"></i>
+              </button>
             </form>
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">Nenhuma ave encontrada.</td></tr>
+        <tr style="background:var(--bg-card);">
+          <td colspan="7" style="text-align:center;color:var(--text-muted);padding:50px 16px;border:none;">
+            <div style="font-size:2.5rem;margin-bottom:10px;">🐦</div>
+            {{ {'pt':'Nenhuma ave encontrada.','en':'No birds found.','fr':'Aucun oiseau trouvé.','de':'Keine Vögel gefunden.'}.get(lang,'Nenhuma ave encontrada.') }}
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+
 {% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ {'pt':'Planos de Assinatura','en':'Subscription Plans','fr':'Plans d\'Abonnement','de':'Abonnementpläne'}.get(lang,'Planos de Assinatura') }}{% endblock %}
+{% block page_icon %}award{% endblock %}
+{% block page_title %}{{ {'pt':'Planos de Assinatura','en':'Subscription Plans','fr':'Plans d\'Abonnement','de':'Abonnementpläne'}.get(lang,'Planos de Assinatura') }}{% endblock %}
+
+{% block content %}
+
+<div class="card" style="padding:20px;background:var(--bg-card);">
+  <div style="font-weight:700;color:var(--text-primary);font-size:1.1rem;margin-bottom:15px;">
+    {{ {'pt':'Escolha o plano ideal para você!','en':'Choose the ideal plan for you!','fr':'Choisissez le plan idéal pour vous !','de':'Wählen Sie den idealen Plan für sich!'}.get(lang,'Escolha o plano ideal para você!') }}
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card h-100 text-center" style="background:var(--bg-secondary);border:1px solid var(--border-color);">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title" style="color:var(--text-primary);font-weight:700;">
+              {{ {'pt':'Plano Básico','en':'Basic Plan','fr':'Plan Basique','de':'Basisplan'}.get(lang,'Plano Básico') }}
+            </h5>
+            <p class="card-text text-muted">
+              {{ {'pt':'Ideal para criadores iniciantes.','en':'Ideal for beginner breeders.','fr':'Idéal pour les éleveurs débutants.','de':'Ideal für Anfänger.'}.get(lang,'Ideal para criadores iniciantes.') }}
+            </p>
+            <h3 style="color:var(--accent);font-weight:800;margin-top:20px;margin-bottom:20px;">R$ 19,90<span style="font-size:0.8rem;color:var(--text-muted);">/mês</span></h3>
+            <ul class="list-unstyled text-start" style="color:var(--text-secondary);font-size:0.9rem;">
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Gerenciamento de Plantel','en':'Flock Management','fr':'Gestion de Cheptel','de':'Bestandsverwaltung'}.get(lang,'Gerenciamento de Plantel') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Controle de Gaiolas','en':'Cage Control','fr':'Contrôle des Cages','de':'Käfigkontrolle'}.get(lang,'Controle de Gaiolas') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Registro de Posturas','en':'Clutch Records','fr':'Registres de Pontes','de':'Gelegeregister'}.get(lang,'Registro de Posturas') }}</li>
+              <li class="text-muted"><i class="bi bi-x-circle-fill text-danger me-2"></i> {{ {'pt':'Simulador de Cruzamentos','en':'Pairing Simulator','fr':'Simulateur de Croisements','de':'Kreuzungssimulator'}.get(lang,'Simulador de Cruzamentos') }}</li>
+              <li class="text-muted"><i class="bi bi-x-circle-fill text-danger me-2"></i> {{ {'pt':'Calculadora de Dieta','en':'Diet Calculator','fr':'Calculateur de Régime','de':'Diätrechner'}.get(lang,'Calculadora de Dieta') }}</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline-primary mt-3">
+            {{ {'pt':'Assinar Plano Básico','en':'Subscribe Basic Plan','fr':'S\'abonner au Plan Basique','de':'Basisplan abonnieren'}.get(lang,'Assinar Plano Básico') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 text-center" style="background:var(--bg-secondary);border:2px solid var(--accent);">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title" style="color:var(--accent);font-weight:700;">
+              {{ {'pt':'Plano Premium','en':'Premium Plan','fr':'Plan Premium','de':'Premiumplan'}.get(lang,'Plano Premium') }}
+            </h5>
+            <p class="card-text text-muted">
+              {{ {'pt':'Recursos avançados para criadores experientes.','en':'Advanced features for experienced breeders.','fr':'Fonctionnalités avancées pour les éleveurs expérimentés.','de':'Erweiterte Funktionen für erfahrene Züchter.'}.get(lang,'Recursos avançados para criadores experientes.') }}
+            </p>
+            <h3 style="color:var(--accent);font-weight:800;margin-top:20px;margin-bottom:20px;">R$ 49,90<span style="font-size:0.8rem;color:var(--text-muted);">/mês</span></h3>
+            <ul class="list-unstyled text-start" style="color:var(--text-secondary);font-size:0.9rem;">
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Todos os recursos do Plano Básico','en':'All Basic Plan features','fr':'Toutes les fonctionnalités du Plan Basique','de':'Alle Basisplan-Funktionen'}.get(lang,'Todos os recursos do Plano Básico') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Simulador de Cruzamentos','en':'Pairing Simulator','fr':'Simulateur de Croisements','de':'Kreuzungssimulator'}.get(lang,'Simulador de Cruzamentos') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Calculadora de Dieta','en':'Diet Calculator','fr':'Calculateur de Régime','de':'Diätrechner'}.get(lang,'Calculadora de Dieta') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Relatórios Detalhados','en':'Detailed Reports','fr':'Rapports Détaillés','de':'Detaillierte Berichte'}.get(lang,'Relatórios Detalhados') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Suporte Prioritário','en':'Priority Support','fr':'Support Prioritaire','de':'Prioritärer Support'}.get(lang,'Suporte Prioritário') }}</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary mt-3">
+            {{ {'pt':'Assinar Plano Premium','en':'Subscribe Premium Plan','fr':'S\'abonner au Plan Premium','de':'Premiumplan abonnieren'}.get(lang,'Assinar Plano Premium') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 text-center" style="background:var(--bg-secondary);border:1px solid var(--border-color);">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title" style="color:var(--text-primary);font-weight:700;">
+              {{ {'pt':'Plano Empresarial','en':'Enterprise Plan','fr':'Plan Entreprise','de':'Unternehmensplan'}.get(lang,'Plano Empresarial') }}
+            </h5>
+            <p class="card-text text-muted">
+              {{ {'pt':'Soluções personalizadas para grandes criatórios.','en':'Custom solutions for large aviaries.','fr':'Solutions personnalisées pour les grandes volières.','de':'Maßgeschneiderte Lösungen für große Zuchtanlagen.'}.get(lang,'Soluções personalizadas para grandes criatórios.') }}
+            </p>
+            <h3 style="color:var(--accent);font-weight:800;margin-top:20px;margin-bottom:20px;">
+              {{ {'pt':'Entre em Contato','en':'Contact Us','fr':'Contactez-nous','de':'Kontaktieren Sie uns'}.get(lang,'Entre em Contato') }}
+            </h3>
+            <ul class="list-unstyled text-start" style="color:var(--text-secondary);font-size:0.9rem;">
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Todos os recursos do Plano Premium','en':'All Premium Plan features','fr':'Toutes les fonctionnalités du Plan Premium','de':'Alle Premiumplan-Funktionen'}.get(lang,'Todos os recursos do Plano Premium') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Usuários Ilimitados','en':'Unlimited Users','fr':'Utilisateurs Illimités','de':'Unbegrenzte Benutzer'}.get(lang,'Usuários Ilimitados') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Integrações Personalizadas','en':'Custom Integrations','fr':'Intégrations Personnalisées','de':'Benutzerdefinierte Integrationen'}.get(lang,'Integrações Personalizadas') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'Consultoria Especializada','en':'Expert Consulting','fr':'Consultation Spécialisée','de':'Spezialisierte Beratung'}.get(lang,'Consultoria Especializada') }}</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> {{ {'pt':'SLA Garantido','en':'Guaranteed SLA','fr':'SLA Garanti','de':'Garantierter SLA'}.get(lang,'SLA Garantido') }}</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline-primary mt-3">
+            {{ {'pt':'Fale Conosco','en':'Contact Us','fr':'Contactez-nous','de':'Kontaktieren Sie uns'}.get(lang,'Fale Conosco') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

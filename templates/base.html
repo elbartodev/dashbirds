@@ -1,115 +1,869 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="{{ lang or 'pt' }}" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DashBirds – {% block title %}{% endblock %}</title>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
 <style>
-:root{--primary:#2d6a4f;--primary-dark:#1b4332;--primary-light:#52b788;--accent:#f4a261;--accent-dark:#e76f51;--bg:#f0f4f0;--card:#fff;--border:#dee2e6;--text:#212529;--muted:#6c757d;--danger:#dc3545;--success:#198754;--info:#0077b6;--sw:230px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
-a{text-decoration:none;color:inherit}
-.sidebar{width:var(--sw);background:var(--primary-dark);color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;overflow-y:auto}
-.sb-head{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sb-head h2{font-size:1.3rem;font-weight:800}
-.sb-head p{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:3px}
-.sb-nav{flex:1;padding:10px 0}
-.nav-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;color:rgba(255,255,255,.7);font-size:.88rem;font-weight:500;transition:.2s;border-left:3px solid transparent;text-decoration:none}
-.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
-.nav-item.active{background:rgba(255,255,255,.12);color:#fff;border-left-color:var(--accent)}
-.sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.1)}
-.user-chip{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px}
-.avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
-.u-name{font-size:.82rem;font-weight:600;color:#fff}
-.u-sub{font-size:.7rem;color:rgba(255,255,255,.5)}
-.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
-.topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.topbar h3{font-size:1rem;font-weight:700}
-.content{padding:24px;flex:1}
-.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07);border:1px solid var(--border);margin-bottom:20px}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.card-title{font-size:.95rem;font-weight:700}
-.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:20px}
-.metric{background:#fff;border-radius:12px;padding:16px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.metric .lbl{font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.metric .val{font-size:1.7rem;font-weight:800;margin:4px 0 2px}
-.metric .sub{font-size:.75rem;color:var(--muted)}
-.m-green .val{color:var(--primary)}.m-blue .val{color:var(--info)}.m-orange .val{color:var(--accent-dark)}.m-red .val{color:var(--danger)}.m-purple .val{color:#7209b7}
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.85rem}
-th{background:var(--bg);padding:9px 12px;text-align:left;font-weight:700;font-size:.75rem;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border)}
-td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#f9fafb}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s}
-.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
-.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent-dark)}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-success{background:var(--success);color:#fff}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-outline:hover{background:var(--bg)}
-.btn-sm{padding:4px 10px;font-size:.78rem}
-.fg{margin-bottom:14px}
-label{display:block;font-size:.8rem;font-weight:600;margin-bottom:4px}
-input,select,textarea{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;background:#fff;color:var(--text);transition:.2s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(45,106,79,.1)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700}
-.b-green{background:#d1fae5;color:#065f46}.b-blue{background:#dbeafe;color:#1e40af}.b-orange{background:#fff3cd;color:#92400e}.b-red{background:#fee2e2;color:#991b1b}.b-gray{background:#f3f4f6;color:#374151}.b-purple{background:#ede9fe;color:#5b21b6}
-.alert{padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:14px}
-.a-danger{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
-.a-success{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
-.swatch{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,0,0,.15);vertical-align:middle;margin-right:4px}
-.search-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
-.cage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
-.cage-card{background:#fff;border:2px solid var(--border);border-radius:12px;padding:16px}
-.cage-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.cage-name{font-weight:700;font-size:.92rem}
-.bird-tag{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:.75rem;display:inline-block;margin:3px}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:16px}
-.modal-bg.open{display:flex}
-.modal-box{background:#fff;border-radius:14px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
-.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff}
-.modal-head h4{font-weight:700;font-size:.95rem}
-.modal-body{padding:20px}
-.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
-.close-x{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted)}
-@media(max-width:768px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.grid2,.grid3{grid-template-columns:1fr}}
+/* ═══════════════════════════════════════════
+   VARIÁVEIS – TEMA DARK
+═══════════════════════════════════════════ */
+:root {
+  --bg-body:       #0f172a;
+  --bg-sidebar:    #1a2332;
+  --bg-card:       #1e293b;
+  --bg-secondary:  #0f172a;
+  --bg-hover:      #263347;
+
+  --border-color:  rgba(255,255,255,0.07);
+
+  --text-primary:  #f1f5f9;
+  --text-secondary:#94a3b8;
+  --text-muted:    #475569;
+
+  --accent:        #22c55e;
+  --accent-dark:   #16a34a;
+  --accent-soft:   rgba(34,197,94,0.12);
+
+  --success:       #22c55e;
+  --success-soft:  rgba(34,197,94,0.12);
+  --danger:        #ef4444;
+  --danger-soft:   rgba(239,68,68,0.12);
+  --warning:       #f59e0b;
+  --warning-soft:  rgba(245,158,11,0.12);
+  --info:          #38bdf8;
+  --info-soft:     rgba(56,189,248,0.12);
+
+  --sidebar-w:     240px;
+  --topbar-h:      60px;
+  --radius:        12px;
+  --radius-sm:     8px;
+  --shadow:        0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; }
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.sidebar-logo .logo-icon {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(34,197,94,0.3);
+}
+
+.sidebar-logo span {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 10px;
+  overflow-y: auto;
+}
+
+.nav-section {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  padding: 14px 12px 6px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.18s;
+  margin-bottom: 2px;
+}
+
+.nav-link i {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-link:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.nav-link.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.nav-link.active i {
+  color: var(--accent);
+}
+
+.sidebar-footer {
+  padding: 14px 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebar-footer .nav-link {
+  color: var(--text-muted);
+}
+
+.sidebar-footer .nav-link:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN WRAPPER
+═══════════════════════════════════════════ */
+.main-wrapper {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+}
+
+/* ═══════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════ */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 16px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.topbar-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-title i {
+  color: var(--accent);
+  margin-right: 6px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.btn-hamburger:hover { color: var(--text-primary); }
+
+/* Dropdown usuário */
+.user-menu {
+  position: relative;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.user-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  min-width: 180px;
+  box-shadow: var(--shadow);
+  display: none;
+  z-index: 300;
+  overflow: hidden;
+}
+
+.user-dropdown.open { display: block; }
+
+.user-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: all 0.15s;
+}
+
+.user-dropdown a:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.user-dropdown a.danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.user-dropdown hr {
+  border-color: var(--border-color);
+  margin: 4px 0;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE CONTENT
+═══════════════════════════════════════════ */
+.page-content {
+  flex: 1;
+  padding: 28px 24px;
+}
+
+/* ═══════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.card-header i {
+  color: var(--accent);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+/* ═══════════════════════════════════════════
+   TABELAS
+═══════════════════════════════════════════ */
+.table {
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+  margin-bottom: 0;
+  font-size: 0.875rem;
+}
+
+.table thead th {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--border-color);
+  border-top: none;
+  padding: 11px 16px;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-hover tbody tr:hover td {
+  background: var(--bg-hover);
+}
+
+/* ═══════════════════════════════════════════
+   FORMULÁRIOS
+═══════════════════════════════════════════ */
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.form-control,
+.form-select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  padding: 9px 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background: var(--bg-secondary);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.form-control::placeholder { color: var(--text-muted); }
+
+.form-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.form-control-color {
+  padding: 5px;
+  height: 42px;
+}
+
+.input-group-text {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* ═══════════════════════════════════════════
+   BOTÕES
+═══════════════════════════════════════════ */
+.btn {
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  transition: all 0.18s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+}
+
+.btn-sm {
+  font-size: 0.78rem;
+  padding: 5px 10px;
+  gap: 4px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: #fff;
+}
+
+.btn-success {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background: #15803d;
+  border-color: #15803d;
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  background: transparent;
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-outline-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+
+.btn-outline-success {
+  background: transparent;
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.btn-outline-success:hover {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.btn-outline-danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-outline-danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.btn-warning {
+  background: var(--warning);
+  border-color: var(--warning);
+  color: #000;
+}
+
+.btn-warning:hover {
+  background: #d97706;
+  border-color: #d97706;
+  color: #000;
+}
+
+/* ═══════════════════════════════════════════
+   ALERTAS
+═══════════════════════════════════════════ */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid transparent;
+}
+
+.alert-success {
+  background: var(--success-soft);
+  color: var(--success);
+  border-color: rgba(34,197,94,0.25);
+}
+
+.alert-danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: rgba(239,68,68,0.25);
+}
+
+/* ═══════════════════════════════════════════
+   MODAIS BOOTSTRAP – OVERRIDE DARK
+═══════════════════════════════════════════ */
+.modal-backdrop {
+  background: rgba(0,0,0,0.7);
+}
+
+.btn-close-white {
+  filter: invert(1) grayscale(1) brightness(2);
+}
+
+/* ═══════════════════════════════════════════
+   OVERLAY SIDEBAR MOBILE
+═══════════════════════════════════════════ */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 199;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVO
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  .main-wrapper {
+    margin-left: 0;
+  }
+
+  .btn-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page-content {
+    padding: 18px 14px;
+  }
+
+  .topbar {
+    padding: 0 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-btn span { display: none; }
+}
+/* ═══════════════════════════════════════════
+   FIX BOOTSTRAP TABLE DARK – FORÇA TEMA
+═══════════════════════════════════════════ */
+.table > :not(caption) > * > * {
+  background-color: var(--bg-card) !important;
+  color: var(--text-secondary) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+
+.table > thead > * > * {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-muted) !important;
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Fix modal backdrop z-index */
+.modal { z-index: 1060; }
+.modal-backdrop { z-index: 1050; }
+
+/* Fix select options dark */
+select option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
 </style>
 </head>
+
 <body>
-<div class="sidebar">
-  <div class="sb-head">
-    <h2>🐦 DashBirds</h2>
-    <p>{{ session.criadouro or 'Criadouro' }}</p>
+
+<!-- Overlay mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-logo">
+    <div class="logo-icon">🐦</div>
+    <span>DashBirds</span>
   </div>
-  <nav class="sb-nav">
-    <a class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span>📊</span> Visão Geral</a>
-    <a class="nav-item {% if request.endpoint in ['plantel','nova_ave','editar_ave'] %}active{% endif %}" href="{{ url_for('plantel') }}"><span>🦜</span> Plantel (Aves)</a>
-    <a class="nav-item {% if request.endpoint == 'gaiolas' %}active{% endif %}" href="{{ url_for('gaiolas') }}"><span>🏠</span> Gaiolas</a>
-    <a class="nav-item {% if request.endpoint == 'posturas' %}active{% endif %}" href="{{ url_for('posturas') }}"><span>🥚</span> Posturas</a>
-    <a class="nav-item {% if request.endpoint in ['bercario','editar_filhote'] %}active{% endif %}" href="{{ url_for('bercario') }}"><span>🐣</span> Berçário</a>
-    <a class="nav-item {% if request.endpoint == 'vendas' %}active{% endif %}" href="{{ url_for('vendas') }}"><span>💰</span> Vendas</a>
-    <a class="nav-item {% if request.endpoint == 'perfil' %}active{% endif %}" href="{{ url_for('perfil') }}"><span>⚙️</span> Meu Perfil</a>
-  </nav>
-  <div class="sb-foot">
-    <a href="{{ url_for('perfil') }}" class="user-chip" style="text-decoration:none">
-      <div class="avatar">{{ session.user_nome[0].upper() if session.user_nome else '?' }}</div>
-      <div><div class="u-name">{{ session.user_nome or '-' }}</div><div class="u-sub">{{ session.criadouro or '-' }}</div></div>
+
+<nav class="sidebar-nav">
+
+  <div class="nav-section">
+    {{ {'pt':'Principal','en':'Main','fr':'Principal','de':'Haupt'}.get(lang,'Principal') }}
+  </div>
+
+  <a href="{{ url_for('dashboard') }}"
+     class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}">
+    <i class="bi bi-speedometer2"></i>
+    {{ {'pt':'Dashboard','en':'Dashboard','fr':'Tableau de Bord','de':'Dashboard'}.get(lang,'Dashboard') }}
+  </a>
+
+  <a href="{{ url_for('plantel') }}"
+     class="nav-link {{ 'active' if request.endpoint in ['plantel','nova_ave','editar_ave'] }}">
+    <i class="bi bi-feather"></i>
+    {{ {'pt':'Plantel','en':'Flock','fr':'Cheptel','de':'Bestand'}.get(lang,'Plantel') }}
+  </a>
+
+  <a href="{{ url_for('gaiolas') }}"
+     class="nav-link {{ 'active' if request.endpoint == 'gaiolas' }}">
+    <i class="bi bi-grid-3x3-gap"></i>
+    {{ {'pt':'Gaiolas','en':'Cages','fr':'Cages','de':'Käfige'}.get(lang,'Gaiolas') }}
+  </a>
+
+  <div class="nav-section">
+    {{ {'pt':'Reprodução','en':'Breeding','fr':'Reproduction','de':'Zucht'}.get(lang,'Reprodução') }}
+  </div>
+
+  <a href="{{ url_for('posturas') }}"
+     class="nav-link {{ 'active' if request.endpoint == 'posturas' }}">
+    <i class="bi bi-egg"></i>
+    {{ {'pt':'Posturas','en':'Clutches','fr':'Pontes','de':'Gelege'}.get(lang,'Posturas') }}
+  </a>
+
+  <a href="{{ url_for('bercario') }}"
+     class="nav-link {{ 'active' if request.endpoint in ['bercario','editar_filhote'] }}">
+    <i class="bi bi-heart"></i>
+    {{ {'pt':'Berçário','en':'Nursery','fr':'Pouponnière','de':'Aufzucht'}.get(lang,'Berçário') }}
+  </a>
+
+  <a href="{{ url_for('cruzamentos') }}"
+     class="nav-link {{ 'active' if request.endpoint == 'cruzamentos' }}">
+    <i class="bi bi-diagram-3"></i>
+    {{ {'pt':'Cruzamentos','en':'Pairings','fr':'Croisements','de':'Kreuzungen'}.get(lang,'Cruzamentos') }}
+  </a>
+
+  <div class="nav-section">
+    {{ {'pt':'Financeiro','en':'Financial','fr':'Financier','de':'Finanzen'}.get(lang,'Financeiro') }}
+  </div>
+
+  <a href="{{ url_for('vendas') }}"
+     class="nav-link {{ 'active' if request.endpoint == 'vendas' }}">
+    <i class="bi bi-cash-coin"></i>
+    {{ {'pt':'Vendas','en':'Sales','fr':'Ventes','de':'Verkäufe'}.get(lang,'Vendas') }}
+  </a>
+
+  <div class="nav-section">
+    {{ {'pt':'Ferramentas','en':'Tools','fr':'Outils','de':'Werkzeuge'}.get(lang,'Ferramentas') }}
+  </div>
+
+  <a href="{{ url_for('calculadora') }}"
+     class="nav-link {{ 'active' if request.endpoint == 'calculadora' }}">
+    <i class="bi bi-calculator"></i>
+    {{ {'pt':'Calculadora de Dieta','en':'Diet Calculator','fr':'Calculateur de Régime','de':'Diätrechner'}.get(lang,'Calculadora de Dieta') }}
+  </a>
+
+  <div class="nav-section">
+    {{ {'pt':'Assinatura','en':'Subscription','fr':'Abonnement','de':'Abonnement'}.get(lang,'Assinatura') }}
+  </div>
+
+  <a href="{{ url_for('planos') }}"
+     class="nav-link {{ 'active' if request.endpoint == 'planos' }}">
+    <i class="bi bi-award"></i>
+    {{ {'pt':'Planos','en':'Plans','fr':'Plans','de':'Pläne'}.get(lang,'Planos') }}
+  </a>
+
+</nav>
+
+  <div class="sidebar-footer">
+    <a href="{{ url_for('perfil') }}"
+       class="nav-link {{ 'active' if request.endpoint == 'perfil' }}">
+      <i class="bi bi-person-circle"></i>
+      {{ {'pt':'Meu Perfil','en':'My Profile','fr':'Mon Profil','de':'Mein Profil'}.get(lang,'Meu Perfil') }}
+    </a>
+    <a href="{{ url_for('logout') }}" class="nav-link">
+      <i class="bi bi-box-arrow-left"></i>
+      {{ {'pt':'Sair','en':'Logout','fr':'Déconnexion','de':'Abmelden'}.get(lang,'Sair') }}
     </a>
   </div>
-</div>
-<div class="main">
-  <div class="topbar">
-    <h3>{% block page_title %}{% endblock %}</h3>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span style="font-size:.82rem;color:var(--muted)">{{ session.criadouro }}</span>
-      <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Sair</a>
+
+</aside>
+
+<!-- ═══════════════════════════════════════
+     MAIN
+═══════════════════════════════════════ -->
+<div class="main-wrapper">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="btn-hamburger" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="topbar-title">
+        <i class="bi bi-{% block page_icon %}circle{% endblock %}"></i>
+        {% block page_title %}{% endblock %}
+      </div>
     </div>
-  </div>
-  <div class="content">
+
+    <div class="topbar-right">
+
+      <!-- Seletor de idioma rápido -->
+      <div style="display:flex;gap:4px;">
+        <a href="/lang/pt"
+           style="font-size:0.72rem;padding:4px 8px;border-radius:6px;border:1px solid {{ 'var(--accent)' if lang=='pt' else 'var(--border-color)' }};color:{{ 'var(--accent)' if lang=='pt' else 'var(--text-muted)' }};transition:all 0.2s;">
+          PT
+        </a>
+        <a href="/lang/en"
+           style="font-size:0.72rem;padding:4px 8px;border-radius:6px;border:1px solid {{ 'var(--accent)' if lang=='en' else 'var(--border-color)' }};color:{{ 'var(--accent)' if lang=='en' else 'var(--text-muted)' }};transition:all 0.2s;">
+          EN
+        </a>
+        <a href="/lang/fr"
+           style="font-size:0.72rem;padding:4px 8px;border-radius:6px;border:1px solid {{ 'var(--accent)' if lang=='fr' else 'var(--border-color)' }};color:{{ 'var(--accent)' if lang=='fr' else 'var(--text-muted)' }};transition:all 0.2s;">
+          FR
+        </a>
+        <a href="/lang/de"
+           style="font-size:0.72rem;padding:4px 8px;border-radius:6px;border:1px solid {{ 'var(--accent)' if lang=='de' else 'var(--border-color)' }};color:{{ 'var(--accent)' if lang=='de' else 'var(--text-muted)' }};transition:all 0.2s;">
+          DE
+        </a>
+      </div>
+
+      <!-- Menu usuário -->
+      <div class="user-menu">
+        <button class="user-btn" onclick="toggleUserMenu()">
+          <div class="user-avatar">
+            {{ session.get('nome','U')[0].upper() }}
+          </div>
+          <span>{{ session.get('nome','Usuário').split()[0] }}</span>
+          <i class="bi bi-chevron-down" style="font-size:0.7rem;"></i>
+        </button>
+        <div class="user-dropdown" id="user-dropdown">
+          <a href="{{ url_for('perfil') }}">
+            <i class="bi bi-person"></i>
+            {{ {'pt':'Perfil','en':'Profile','fr':'Profil','de':'Profil'}.get(lang,'Perfil') }}
+          </a>
+          <hr>
+          <a href="{{ url_for('logout') }}" class="danger">
+            <i class="bi bi-box-arrow-left"></i>
+            {{ {'pt':'Sair','en':'Logout','fr':'Déconnexion','de':'Abmelden'}.get(lang,'Sair') }}
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Conteúdo -->
+  <main class="page-content">
     {% block content %}{% endblock %}
-  </div>
+  </main>
+
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* Sidebar mobile */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+/* Dropdown usuário */
+function toggleUserMenu() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  const menu = document.querySelector('.user-menu');
+  if (menu && !menu.contains(e.target)) {
+    document.getElementById('user-dropdown').classList.remove('open');
+  }
+});
+</script>
+
+{% block extra_js %}{% endblock %}
+
 </body>
 </html>
